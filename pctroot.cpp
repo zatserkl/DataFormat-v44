@@ -16,7 +16,7 @@
    for debugging
    clang++ -g -Wall `$ROOTSYS/bin/root-config --cflags --glibs` pctroot.cpp -o pctroot DataFormat_dict.cxx
    
-   Ubuntu 12.04 (tarball installation)
+   Ubuntu 12.04
    rootcint -f DataFormat_dict.cxx -c DataFormat.h DataFormat_linkdef.h
    g++ -Wall `root-config --cflags`  pctroot.cpp -o pctroot DataFormat_d
  */
