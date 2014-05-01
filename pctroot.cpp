@@ -17,9 +17,6 @@
    clang++ -g -Wall `$ROOTSYS/bin/root-config --cflags --glibs` pctroot.cpp -o pctroot DataFormat_dict.cxx
    
    Ubuntu 12.04 (tarball installation)
-   # Reminder: Ubuntu requires explicit linking to be enabled.
-   # http://particlephysicsandcode.com/2012/10/04/install-cerns-root-on-
-   # ./configure linuxx8664gcc --enable-explicitlink
    rootcint -f DataFormat_dict.cxx -c DataFormat.h DataFormat_linkdef.h
    g++ -Wall `root-config --cflags`  pctroot.cpp -o pctroot DataFormat_d
  */
