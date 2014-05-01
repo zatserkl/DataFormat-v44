@@ -18,7 +18,7 @@
    
    Ubuntu 12.04
    rootcint -f DataFormat_dict.cxx -c DataFormat.h DataFormat_linkdef.h
-   g++ -Wall `root-config --cflags`  pctroot.cpp -o pctroot DataFormat_d
+   g++ -Wall `root-config --cflags`  pctroot.cpp -o pctroot DataFormat_d `root-config --glibs`
  */
 
 // Analyze a pCT unformatted raw data file.
