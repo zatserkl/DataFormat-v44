@@ -361,122 +361,6 @@ public:
    }
 };
 
-// class PCTEntry: public TObject {
-// public:
-//    Bool_t ok;                       // error flag
-//    TClonesArray* track;             //-> 
-//    Int_t nt;                        // the number of super tracks
-//    Float_t a[5];                    // Energy detector channels
-//    Float_t ped[5];
-//    Float_t sample[16];
-//    PCTEntry(): TObject(), ok(kTRUE), nt(0) {
-//       track = new TClonesArray("SuperTrack");
-//    }
-//    ~PCTEntry() {delete track;}
-//    void clear() {
-//       track->Clear();
-//       nt = 0;
-//       for (int i=0; i<5; ++i) {
-//          a[i] = 0;
-//          ped[i] = 0;
-//       }
-//       for (int i=0; i<16; ++i) sample[i] = 0;
-//    }
-//    void Extract(const Reco& reco) {
-//       clear();
-//       for (std::list<const SuperTrack*>::const_iterator it=reco.superTracks_.begin(); it!=reco.superTracks_.end(); ++it) {
-//          const SuperTrack* superTrack = *it;
-//          new ((*track)[track->GetLast()+1]) SuperTrack(*superTrack);
-//          ++nt;
-//       }
-//       // Energy detector
-//       //a[0] = reco.pCTEvent_->energyBoard[0].pulse[0];
-//       //a[1] = reco.pCTEvent_->energyBoard[0].pulse[1];
-//       //a[2] = reco.pCTEvent_->energyBoard[0].pulse[2];
-//       //a[3] = reco.pCTEvent_->energyBoard[1].pulse[0];
-//       //a[4] = reco.pCTEvent_->energyBoard[1].pulse[1];
-// 
-//       /////////////////////////////
-//       int brd=0;
-//       ///// //--orig int enrgTag0= thisEvent->Event->Board[0].enrgTag;
-//       ///// //--orig int enrgTag1= thisEvent->Event->Board[1].enrgTag;
-//       ///// //		if (enrgTag0 != enrgTag1) cout << "enrg tag mismatch: " << enrgTag0 << " vs " << enrgTag1;
-//       if (reco.pCTEvent_->energyBoard[brd].numChan>0 || reco.pCTEvent_->energyBoard[brd].numSamples>0) {
-//         /////   //			if (thisEvent->Event->Board[brd].enrgTag != evtNum % 4) cout << "tag mismatch, energy tag=" << thisEvent->Event->Board[brd].enrgTag << "\n";
-//         if (reco.pCTEvent_->energyBoard[brd].reduced) {
-//           a[0] = reco.pCTEvent_->energyBoard[brd].pulse[0];  ped[0] = reco.pCTEvent_->energyBoard[brd].pedestal[0];
-//           a[1] = reco.pCTEvent_->energyBoard[brd].pulse[1];	ped[1] = reco.pCTEvent_->energyBoard[brd].pedestal[1];
-//           a[2] =	reco.pCTEvent_->energyBoard[brd].pulse[2];	ped[2] = reco.pCTEvent_->energyBoard[brd].pedestal[2];
-//         } else {
-//           a[0] = 0.; a[1] = 0.; a[2] = 0.;
-//           /// enrgSamp *thisSamp = thisEvent->Event->Board[brd].firstSample;
-//           //EnergySample* energySample = (EnergySample*) reco.pCTEvent_->energyBoard[brd].samples->At(0);
-//           //if (thisSamp != 0)
-//           if (reco.pCTEvent_->energyBoard[brd].samples->GetLast()+1 > 0)
-//           {
-//             EnergySample* energySample0 = (EnergySample*) reco.pCTEvent_->energyBoard[brd].samples->At(0);
-//             int ped0 = energySample0->pulse[0]; ped[0] = ped0;
-//             int ped1 = energySample0->pulse[1]; ped[1] = ped1;
-//             int ped2 = energySample0->pulse[2]; ped[2] = ped2;
-//             //while (thisSamp != 0)
-//             for (int isample=1; isample<reco.pCTEvent_->energyBoard[brd].samples->GetLast()+1; ++isample)
-//             {
-//               EnergySample* energySample = (EnergySample*) reco.pCTEvent_->energyBoard[brd].samples->At(isample);
-//               a[0] = a[0] + energySample->pulse[0] - ped0;
-//               a[1] = a[1] + energySample->pulse[1] - ped1;
-//               a[2] = a[2] + energySample->pulse[2] - ped2;
-//             }
-//           }
-//         }
-//       } else {
-//         a[0] = 0; ped[0] = 0;
-//         a[1] = 0; ped[1] = 0;
-//         a[2] = 0; ped[2] = 0;
-//       }
-//       brd=1;
-//       if (reco.pCTEvent_->energyBoard[brd].numChan>0 || reco.pCTEvent_->energyBoard[brd].numSamples>0) {
-//         /////   //			if (thisEvent->Event->Board[brd].enrgTag != evtNum % 4) cout << "tag mismatch, energy tag=" << thisEvent->Event->Board[brd].enrgTag << "\n";
-//         if (reco.pCTEvent_->energyBoard[brd].reduced) {
-//           a[3] = reco.pCTEvent_->energyBoard[brd].pulse[0];  ped[3] = reco.pCTEvent_->energyBoard[brd].pedestal[0];
-//           a[4] = reco.pCTEvent_->energyBoard[brd].pulse[1];	ped[4] = reco.pCTEvent_->energyBoard[brd].pedestal[1];
-//           //--no such channel-- PhCh5 =	reco.pCTEvent_->energyBoard[brd].pulse[2];
-//         } else {
-//           a[3] = 0.; a[4] = 0.; //--no such channel-- PhCh5 = 0.;
-//           int ped3 = 0; int ped4 = 0; int ped5 = 0;
-//           /// enrgSamp *thisSamp = thisEvent->Event->Board[brd].firstSample;
-//           //EnergySample* energySample = (EnergySample*) reco.pCTEvent_->energyBoard[brd].samples->At(0);
-//           //if (thisSamp != 0)
-//           if (reco.pCTEvent_->energyBoard[brd].samples->GetLast()+1 > 0)
-//           {
-//             EnergySample* energySample0 = (EnergySample*) reco.pCTEvent_->energyBoard[brd].samples->At(0);
-//             ped3 = energySample0->pulse[0]; ped[3] = ped3;
-//             ped4 = energySample0->pulse[1]; ped[4] = ped4;
-//             ped5 = energySample0->pulse[2];
-//             //while (thisSamp != 0)
-//             for (int isample=1; isample<reco.pCTEvent_->energyBoard[brd].samples->GetLast()+1; ++isample)
-//             {
-//               EnergySample* energySample = (EnergySample*) reco.pCTEvent_->energyBoard[brd].samples->At(isample);
-//               a[3] = a[3] + energySample->pulse[0] - ped3;
-//               a[4] = a[4] + energySample->pulse[1] - ped4;
-//               //--no such channel-- PhCh5 = PhCh5 + energySample->pulse[2] - ped5;
-//             }
-//           }
-//         }
-//       } else {
-//         a[3] = 0; ped[3] = 0;
-//         a[4] = 0; ped[4] = 0;
-//         //--no such channel-- PhCh5 = 0;
-//       }
-//       /////////////////////////////
-//    }
-// 
-//    ClassDef(PCTEntry, 4);
-// };
-// 
-// #ifdef __MAKECINT__
-// #pragma link C++ class PCTEntry;
-// #endif
-
 class RecoEvent: public TObject {
 public:
    Bool_t ok;                       // error flag
@@ -499,6 +383,30 @@ public:
          ped[i] = 0;
       }
       for (int ichan=0; ichan<5; ++ichan) for (int isample=0; isample<16; ++isample) sample[ichan][isample] = 0;
+   }
+   Float_t SampleSum(Int_t chan, Int_t nfront, Int_t ntail, Double_t pedestal) {
+      if (chan < 0 || chan > 4) return 0;
+      // find a position of the maximum
+      Int_t imax = 0;
+      // assumes that the number of samples is 16
+      Float_t sum = sample[chan][imax];
+      for (int isample=0; isample<16; ++isample) {
+         sum += sample[chan][isample];
+         if (sample[chan][isample] > sample[chan][imax]) {
+            imax = isample;
+         }
+      }
+      if (sum == 0) return 0;          // there are no samples in this event
+      Int_t n1 = imax - nfront;
+      if (n1 < 0) n1 = 0;
+      Int_t n2 = imax + ntail;
+      if (n2 > 15) n2 = 15;
+
+      sum = 0;
+      for (int isample=n1; isample<=n2; ++isample) sum += sample[chan][isample];
+      sum -= (n2 - n1)*pedestal;
+
+      return sum;
    }
    void Extract(const Reco& reco) {
       clear();

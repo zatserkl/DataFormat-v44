@@ -248,13 +248,13 @@ public:
 
       union {
          Char_t buf[4];
-         Float_t time;
+         Float_t time;                  // 32 bit run start time, floating point single precision, in seconds
       } time_union;
       time_union.buf[0] = buf_time[3];
       time_union.buf[1] = buf_time[2];
       time_union.buf[2] = buf_time[1];
       time_union.buf[3] = buf_time[0];
-      time = time_union.time;                         // convert from float to long
+      time = (Int_t) time_union.time;   // convert from float to Int_t
 
       timeTag = buf_timeTag;
       version = buf_version;
