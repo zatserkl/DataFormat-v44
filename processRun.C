@@ -1,5 +1,6 @@
 // Andriy Zatserklyaniy, April 17, 2014
 
+#include "Geometry.h"
 #include "Reco.h"
 
 #include <TCanvas.h>
@@ -8,6 +9,12 @@
 
 #include <string>
 
+//-- ClassImp(RecoEvent);
+
+//
+// static pointer to the geometry
+//
+Geometry* Geometry::geometry_ = 0;
 //
 // static hit pool
 //
@@ -16,9 +23,10 @@ TClonesArray* Reco::poolTrack2D_ = 0;
 TClonesArray* Reco::poolSuperTrack2D_ = 0;
 TClonesArray* Reco::poolSuperTrack_ = 0;
 
-void reco(const char* ifname, Int_t event1=0, Int_t event2=-1)
+void reco(const char* ifname, Int_t event1=0, Int_t event2=-1, const char* dbname="rundb-Mar2014.dat")
 {
    Bool_t debug = kFALSE;
+   // Bool_t debug = kTRUE;
 
    TFile* ifile = new TFile(ifname);
    if (!ifile) {
@@ -48,8 +56,6 @@ void reco(const char* ifname, Int_t event1=0, Int_t event2=-1)
    otree->SetMarkerColor(2);
    otree->Branch("revent", "RecoEvent", &recoEvent);
 
-   PCTSensors* pCTSensors = new PCTSensors();
-
    RunHeader* runHeader = (RunHeader*) tree->GetUserInfo()->First();
    cout<< "runHeader->GetRun() = " << runHeader->GetRun() <<endl;
    time_t start_time = runHeader->GetTime();
@@ -58,6 +64,13 @@ void reco(const char* ifname, Int_t event1=0, Int_t event2=-1)
    if (runHeader->GetTimeTag()) cout<< "event time tag was written out" <<endl;
    else cout<< "event time tag was not written out" <<endl;
    cout<<endl;
+
+   //
+   // read the database
+   //
+   Geometry* geometry = new Geometry(runHeader->GetRun(), dbname);
+
+   PCTSensors* pCTSensors = new PCTSensors(geometry);
 
    Int_t tnchan = 400, vnchan = 10;
    Double_t tlow = -200., tup = 200., vlow = -50, vup = 50;
@@ -82,7 +95,7 @@ void reco(const char* ifname, Int_t event1=0, Int_t event2=-1)
           || (ientry%100000 == 0)
       ) cout<< "---> processing entry " << ientry <<endl; 
 
-      Reco reco(pCTSensors, pCTEvent, ientry, debug);
+      Reco reco(geometry, pCTSensors, pCTEvent, ientry, debug);
       //cout<< "------------------------ generate 2D tracks ---" <<endl;
       reco.GenerateTracks2D();
       //cout<< "------------------------ generate 2D SuperTracks ---" <<endl;
@@ -140,7 +153,7 @@ void reco(const char* ifname, Int_t event1=0, Int_t event2=-1)
    ofile->Write();
 }
 
-void recoEvent(Int_t event=100128, TTree* tree=0, bool debug=true)
+void recoEvent(Int_t event=100128, TTree* tree=0, bool debug=true, const char* dbname="rundb-Mar2014.dat")
 {
    if (!tree) tree = (TTree*) gDirectory->Get("t");
    if (!tree) {
@@ -157,12 +170,17 @@ void recoEvent(Int_t event=100128, TTree* tree=0, bool debug=true)
    else cout<< "event time tag was not written out" <<endl;
    cout<<endl;
 
+   //
+   // read the database
+   //
+   Geometry* geometry = new Geometry(runHeader->GetRun(), dbname);
+
    const PCTEvent* pCTEvent = 0;
    tree->SetBranchAddress("event", &pCTEvent);
 
    RecoEvent* recoEvent = new RecoEvent();
 
-   PCTSensors* pCTSensors = new PCTSensors();
+   PCTSensors* pCTSensors = new PCTSensors(geometry);
 
    if (tree->LoadTree(event) < 0) {
       cout<< "Could not load event " << event <<endl;
@@ -170,7 +188,7 @@ void recoEvent(Int_t event=100128, TTree* tree=0, bool debug=true)
    }
    tree->GetEntry(event);
 
-   Reco reco(pCTSensors, pCTEvent, event, debug);
+   Reco reco(geometry, pCTSensors, pCTEvent, event, debug);
    cout<< "------------------------ generate 2D tracks ---" <<endl;
    reco.GenerateTracks2D();
    cout<< "------------------------ generate 2D SuperTracks ---" <<endl;
@@ -202,7 +220,7 @@ void recoEvent(Int_t event=100128, TTree* tree=0, bool debug=true)
    for (int ichan=0; ichan<5; ++ichan) cout<< "a[" << ichan << "] = " << recoEvent->a[ichan] << " "; cout<<endl;
 }
 
-Int_t display(Int_t event, TTree* tree=0, const char* wname="event_display")
+Int_t display(Int_t event, TTree* tree=0, const char* dbname="rundb-Mar2014.dat", const char* wname="event_display")
 {
    if (!tree) tree = (TTree*) gDirectory->Get("t");
    if (!tree) {
@@ -210,16 +228,21 @@ Int_t display(Int_t event, TTree* tree=0, const char* wname="event_display")
       return -1;
    }
 
-   // RunHeader* runHeader = (RunHeader*) tree->GetUserInfo()->First();
-   // cout<< "runHeader->GetRun() = " << runHeader->GetRun() <<endl;
-   // time_t start_time = runHeader->GetTime();
-   // cout<< "run start time: " << std::ctime(&start_time);
-   // cout<< "program version is " << runHeader->GetVersion() <<endl;
-   // if (runHeader->GetTimeTag()) cout<< "event time tag was written out" <<endl;
-   // else cout<< "event time tag was not written out" <<endl;
-   // cout<<endl;
+   RunHeader* runHeader = (RunHeader*) tree->GetUserInfo()->First();
+   cout<< "runHeader->GetRun() = " << runHeader->GetRun() <<endl;
+   time_t start_time = runHeader->GetTime();
+   cout<< "run start time: " << std::ctime(&start_time);
+   cout<< "program version is " << runHeader->GetVersion() <<endl;
+   if (runHeader->GetTimeTag()) cout<< "event time tag was written out" <<endl;
+   else cout<< "event time tag was not written out" <<endl;
+   cout<<endl;
 
-   PCTSensors pCTSensors;
+   //
+   // read the database
+   //
+   Geometry* geometry = new Geometry(runHeader->GetRun(), dbname);
+
+   PCTSensors pCTSensors(geometry);
 
    const PCTEvent* pCTEvent = 0;
    tree->SetBranchAddress("event", &pCTEvent);
@@ -287,20 +310,22 @@ Int_t display(Int_t event, TTree* tree=0, const char* wname="event_display")
 
    can->DrawFrame(-300,-250, 300,250, Form("event %d",event));
 
-   Double_t uv[4] = {-217.7, -167.6,  166.8,  216.9};
-   Double_t ut[4] = {-211.8, -161.8,  161.0,  211.0};
-   //
-   // Before the run 51 we moved the upstream cassette to 2 inch upstream
-   // This is equivalent to increase in abs value of all distances to 25.4 mm
-   //
-   for (int ilayer=0; ilayer<4; ++ilayer) {
-      Double_t shift = 25.4;  // mm
-      Double_t sign;
-      sign = uv[ilayer] < 0? -1.: 1.;
-      uv[ilayer] += sign*shift;
-      sign = ut[ilayer] < 0? -1.: 1.;
-      ut[ilayer] += sign*shift;
-   }
+   /// Double_t uv[4] = {-217.7, -167.6,  166.8,  216.9};
+   /// Double_t ut[4] = {-211.8, -161.8,  161.0,  211.0};
+   const Double_t* uv = geometry->uv_;
+   const Double_t* ut = geometry->uv_;
+
+   // // Before the run 51 we moved the upstream cassette to 2 inch upstream
+   // // This is equivalent to increase in abs value of all distances to 25.4 mm
+   // //
+   // for (int ilayer=0; ilayer<4; ++ilayer) {
+   //    Double_t shift = 25.4;  // mm
+   //    Double_t sign;
+   //    sign = uv[ilayer] < 0? -1.: 1.;
+   //    uv[ilayer] += sign*shift;
+   //    sign = ut[ilayer] < 0? -1.: 1.;
+   //    ut[ilayer] += sign*shift;
+   // }
 
    TLine line;
    // forward
