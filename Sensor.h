@@ -4,6 +4,7 @@
 #define Sensor_h
 
 #include "Track.h"
+#include "Geometry.h"
 
 #include <TROOT.h>
 #include <TCanvas.h>
@@ -170,6 +171,7 @@ class PCTSensors {
    //          chip11         chip0    V v-axis direction
    //
 public:
+   const Geometry* geometry_;
    VSensor vSensor[4][2];     // [layer][sensor]
    TSensor tSensor[4][4];     // [layer][sensor]
    // hits
@@ -212,7 +214,7 @@ public:
          t_hits[ilayer].clear();
       }
    }
-   PCTSensors()
+   PCTSensors(const Geometry* geometry): geometry_(geometry)
    {
       //cout<< "PCTSensors::PCTSensors" <<endl;
       //Sensor::CreateHitPool();
@@ -227,17 +229,17 @@ public:
       //  V-sensors
       //
 
-      Double_t vPin[4] = {0.055,0.055,0.055,0.055};
-      int vBoard[4] = {6,4,2,3};  	      // fpga to V-board translation; this will change if spares are swapped
-      Double_t firstStripV[7][2] = {		// Distance from the alignment pin to the first strip
-         {-43.7193, -43.716},             // Board V0 doesn't exist
-         {-43.7193, -43.716},
-         {-43.7193, -43.716},
-         {-43.7193, -43.716},
-         {-43.7193, -43.716},	            // These numbers are actually from V4
-         {-43.7193, -43.716},
-         {-43.5855, -43.5865}             // these are actually from T6
-      };
+      /// Double_t vPin[4] = {0.055,0.055,0.055,0.055};
+      /// int vBoard[4] = {6,4,2,3};  	      // fpga to V-board translation; this will change if spares are swapped
+      /// Double_t firstStripV[7][2] = {		// Distance from the alignment pin to the first strip
+      ///    {-43.7193, -43.716},             // Board V0 doesn't exist
+      ///    {-43.7193, -43.716},
+      ///    {-43.7193, -43.716},
+      ///    {-43.7193, -43.716},
+      ///    {-43.7193, -43.716},	            // These numbers are actually from V4
+      ///    {-43.7193, -43.716},
+      ///    {-43.5855, -43.5865}             // these are actually from T6
+      /// };
 
       //
       // the firstStripV above is actually the strip #0 in the chip #5 (bottom part of the sensor but top part of the setup)
@@ -251,8 +253,8 @@ public:
       // 0.055 - 43.5865 = -43.5305 mm
       //
 
-      Double_t uv[4] = {-217.7, -167.6,  166.8,  216.9};
-      Double_t ut[4] = {-211.8, -161.8,  161.0,  211.0};
+      /// Double_t uv[4] = {-217.7, -167.6,  166.8,  216.9};
+      /// Double_t ut[4] = {-211.8, -161.8,  161.0,  211.0};
       // //
       // // Before the run 51 we moved the upstream cassette to 2 inch upstream
       // // This is equivalent to increase in abs value of all distances to 25.4 mm
@@ -268,9 +270,9 @@ public:
 
       Double_t firstStripVabs[7][2];      // absolute coordinate of the first strip
       sensor = 0;
-      for (int iboard=0; iboard<7; ++iboard) firstStripVabs[iboard][sensor] = vPin[0] + firstStripV[iboard][sensor] + 383*pitch;  // chip 0, strip 63
+      for (int iboard=0; iboard<7; ++iboard) firstStripVabs[iboard][sensor] = geometry_->vPin_[0] + geometry_->firstStripV_[iboard][sensor] + 383*pitch;  // chip 0, strip 63
       sensor = 1;
-      for (int iboard=0; iboard<7; ++iboard) firstStripVabs[iboard][sensor] = vPin[0] + firstStripV[iboard][sensor];  // chip 6, strip 63
+      for (int iboard=0; iboard<7; ++iboard) firstStripVabs[iboard][sensor] = geometry_->vPin_[0] + geometry_->firstStripV_[iboard][sensor];  // chip 6, strip 63
       // for (int iboard=0; iboard<7; ++iboard) {
       //    for (int iside=0; iside<2; ++iside) {
       //       cout<< firstStripVabs[iboard][iside] << "\t ";
@@ -279,64 +281,64 @@ public:
       // }
 
       layer = 0;
-      board = vBoard[layer];  dir = -1; sensor = 0;   //1*100 + layer*10 + 0;
-      vSensor[layer][sensor].Set_strip1_dir_info(uv[layer], firstStripVabs[board][sensor], dir, layer, sensor);
-      board = vBoard[layer];  dir = +1; sensor = 1;   //1*100 + layer*10 + 1;
-      vSensor[layer][sensor].Set_strip1_dir_info(uv[layer], firstStripVabs[board][sensor], dir, layer, sensor);
+      board = geometry_->vBoardLayer_[layer];  dir = -1; sensor = 0;   //1*100 + layer*10 + 0;
+      vSensor[layer][sensor].Set_strip1_dir_info(geometry_->uv_[layer], firstStripVabs[board][sensor], dir, layer, sensor);
+      board = geometry_->vBoardLayer_[layer];  dir = +1; sensor = 1;   //1*100 + layer*10 + 1;
+      vSensor[layer][sensor].Set_strip1_dir_info(geometry_->uv_[layer], firstStripVabs[board][sensor], dir, layer, sensor);
       //
       layer = 1;  // identical to the layer 0
-      board = vBoard[layer];  dir = -1; sensor = 0;   //1*100 + layer*10 + 0;
-      vSensor[layer][sensor].Set_strip1_dir_info(uv[layer], firstStripVabs[board][sensor], dir, layer, sensor);
-      board = vBoard[layer];  dir = +1; sensor = 1;   //1*100 + layer*10 + 1;
-      vSensor[layer][sensor].Set_strip1_dir_info(uv[layer], firstStripVabs[board][sensor], dir, layer, sensor);
+      board = geometry_->vBoardLayer_[layer];  dir = -1; sensor = 0;   //1*100 + layer*10 + 0;
+      vSensor[layer][sensor].Set_strip1_dir_info(geometry_->uv_[layer], firstStripVabs[board][sensor], dir, layer, sensor);
+      board = geometry_->vBoardLayer_[layer];  dir = +1; sensor = 1;   //1*100 + layer*10 + 1;
+      vSensor[layer][sensor].Set_strip1_dir_info(geometry_->uv_[layer], firstStripVabs[board][sensor], dir, layer, sensor);
       //
       layer = 2;
-      board = vBoard[layer];  dir = -1; sensor = 0;   //1*100 + layer*10 + 0;
-      vSensor[layer][sensor].Set_strip1_dir_info(uv[layer], firstStripVabs[board][sensor], dir, layer, sensor);
-      board = vBoard[layer];  dir = +1; sensor = 1;   //1*100 + layer*10 + 1;
-      vSensor[layer][sensor].Set_strip1_dir_info(uv[layer], firstStripVabs[board][sensor], dir, layer, sensor);
+      board = geometry_->vBoardLayer_[layer];  dir = -1; sensor = 0;   //1*100 + layer*10 + 0;
+      vSensor[layer][sensor].Set_strip1_dir_info(geometry_->uv_[layer], firstStripVabs[board][sensor], dir, layer, sensor);
+      board = geometry_->vBoardLayer_[layer];  dir = +1; sensor = 1;   //1*100 + layer*10 + 1;
+      vSensor[layer][sensor].Set_strip1_dir_info(geometry_->uv_[layer], firstStripVabs[board][sensor], dir, layer, sensor);
       //
       layer = 3;  // identical to the layer 2
-      board = vBoard[layer];  dir = -1; sensor = 0;   //1*100 + layer*10 + 0;
-      vSensor[layer][sensor].Set_strip1_dir_info(uv[layer], firstStripVabs[board][sensor], dir, layer, sensor);
-      board = vBoard[layer];  dir = +1; sensor = 1;   //1*100 + layer*10 + 1;
-      vSensor[layer][sensor].Set_strip1_dir_info(uv[layer], firstStripVabs[board][sensor], dir, layer, sensor);
+      board = geometry_->vBoardLayer_[layer];  dir = -1; sensor = 0;   //1*100 + layer*10 + 0;
+      vSensor[layer][sensor].Set_strip1_dir_info(geometry_->uv_[layer], firstStripVabs[board][sensor], dir, layer, sensor);
+      board = geometry_->vBoardLayer_[layer];  dir = +1; sensor = 1;   //1*100 + layer*10 + 1;
+      vSensor[layer][sensor].Set_strip1_dir_info(geometry_->uv_[layer], firstStripVabs[board][sensor], dir, layer, sensor);
 
       //
       //  T-sensors
       //
 
-      Double_t tPin[4] = {215.24, 211.25, -211.25, -215.24};   // T coordinate of alignment pin per layer
-      //Double_t tDir[4] = {-1.0, -1.0, 1.0, 1.0};               // T direction of increasing strip number per layer
+      /// Double_t tPin[4] = {215.24, 211.25, -211.25, -215.24};   // T coordinate of alignment pin per layer
+      /// //Double_t tDir[4] = {-1.0, -1.0, 1.0, 1.0};               // T direction of increasing strip number per layer
 
-      Int_t tBoard[4] = {5, 4, 1, 3};     // T-layer to physical T board translation. This will change if spares are swapped in!
-      Double_t firstStripT[7][4] = {      // First strip location rel to pin for each sensor on each physical board
-         {-999., -999., -999., -999.},		// Board 0 doesn't exist.  We manufactured 6 boards.
-         {38.58, 126.85, 215.11, 303.37},
-         {38.58, 126.85, 215.11, 303.37},
-         {38.58, 126.85, 215.11, 303.37},
-         {38.58, 126.85, 215.11, 303.37}, // These numbers actually come from board T4
-         {38.62, 126.90, 215.16, 303.41}, // these numbers actually come from board T5
-         {38.58, 126.85, 215.11, 303.37} 
-      };
+      /// Int_t tBoard[4] = {5, 4, 1, 3};     // T-layer to physical T board translation. This will change if spares are swapped in!
+      /// Double_t firstStripT[7][4] = {      // First strip location rel to pin for each sensor on each physical board
+      ///    {-999., -999., -999., -999.},		// Board 0 doesn't exist.  We manufactured 6 boards.
+      ///    {38.58, 126.85, 215.11, 303.37},
+      ///    {38.58, 126.85, 215.11, 303.37},
+      ///    {38.58, 126.85, 215.11, 303.37},
+      ///    {38.58, 126.85, 215.11, 303.37}, // These numbers actually come from board T4
+      ///    {38.62, 126.90, 215.16, 303.41}, // these numbers actually come from board T5
+      ///    {38.58, 126.85, 215.11, 303.37} 
+      /// };
 
       dir = -1;
       for (int ilayer=0; ilayer<2; ++ilayer) {
-         Double_t pin = tPin[ilayer];
-         board = tBoard[ilayer];                         // production number of the board for this layer
+         Double_t pin = geometry_->tPin_[ilayer];
+         board = geometry_->tBoardLayer_[ilayer];                         // production number of the board for this layer
          for (int isensor=0; isensor<4; ++isensor) {
             //Int_t sensorId = 2*100 + ilayer*10 + isensor;
-            tSensor[ilayer][isensor].Set_strip1_dir_info(ut[ilayer], pin + dir*firstStripT[board][isensor], dir, ilayer, isensor);
+            tSensor[ilayer][isensor].Set_strip1_dir_info(geometry_->ut_[ilayer], pin + dir*geometry_->firstStripT_[board][isensor], dir, ilayer, isensor);
          }
       }
 
       dir = +1;
       for (int ilayer=2; ilayer<4; ++ilayer) {
-         Double_t pin = tPin[ilayer];
-         board = tBoard[ilayer];                         // production number of the board for this layer
+         Double_t pin = geometry_->tPin_[ilayer];
+         board = geometry_->tBoardLayer_[ilayer];                         // production number of the board for this layer
          for (int isensor=0; isensor<4; ++isensor) {
             //Int_t sensorId = 2*100 + ilayer*10 + isensor;
-            tSensor[ilayer][isensor].Set_strip1_dir_info(ut[ilayer], pin + dir*firstStripT[board][isensor], dir, ilayer, isensor);
+            tSensor[ilayer][isensor].Set_strip1_dir_info(geometry_->ut_[ilayer], pin + dir*geometry_->firstStripT_[board][isensor], dir, ilayer, isensor);
          }
       }
    }
