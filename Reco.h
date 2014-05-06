@@ -6,6 +6,7 @@
 #include "DataFormat.h"
 #include "Track.h"
 #include "Sensor.h"
+#include "Geometry.h"
 
 #include <iostream>
 #include <vector>
@@ -24,6 +25,7 @@ class Reco {
 public:
    Bool_t debug_;
    Float_t deltaT_;
+   const Geometry* geometry_;
    PCTSensors* pCTSensors_;
    const PCTEvent* pCTEvent_;
    Int_t event_;
@@ -41,7 +43,9 @@ public:
    static TClonesArray* poolSuperTrack2D_;            //->
    static TClonesArray* poolSuperTrack_;              //->
 public:
-   Reco(PCTSensors* pCTSensors, const PCTEvent* pCTEvent, Int_t event, bool debug=kFALSE): debug_(debug), pCTSensors_(pCTSensors), pCTEvent_(pCTEvent), event_(event)
+   Reco(const Geometry* geometry, PCTSensors* pCTSensors, const PCTEvent* pCTEvent, Int_t event, bool debug=kFALSE): debug_(debug)
+      , geometry_(geometry), pCTSensors_(pCTSensors), pCTEvent_(pCTEvent)
+      , event_(event)
    {
       deltaT_ = pCTEvent_->deltaT;
       //cout<< "Reco::Reco: create pool" <<endl;
@@ -354,6 +358,8 @@ public:
       //
       if (vSuperTracks_.size() != 1) return;
       if (tSuperTracks_.size() != 1) return;
+
+      // match the halves
 
       //-- SuperTrack* superTrack = new SuperTrack(vSuperTracks_.front(), tSuperTracks_.front());
       SuperTrack* superTrack = new ((*poolSuperTrack_)[poolSuperTrack_->GetLast()+1]) SuperTrack(vSuperTracks_.front(), tSuperTracks_.front());
