@@ -259,15 +259,19 @@ public:
    const SuperTrack2D* vTrack_;
    const SuperTrack2D* tTrack_;
    Double_t angle;      // angle between the input and output 3D tracks
+   Double_t itheta;
+   Double_t otheta;
    // handy vars
    Double_t vcal;       // v at the calorimeter front surface
    Double_t tcal;       // t at the calorimeter front surface
 public:
-   SuperTrack(): TObject(), vTrack_(0), tTrack_(0), angle(0), vcal(0), tcal(0) {}
+   SuperTrack(): TObject(), vTrack_(0), tTrack_(0), angle(0), itheta(0), otheta(0), vcal(0), tcal(0) {}
    SuperTrack(const SuperTrack& superTrack): TObject(superTrack) {
       vTrack_ = new SuperTrack2D(*superTrack.vTrack_);
       tTrack_ = new SuperTrack2D(*superTrack.tTrack_);
       angle = superTrack.angle;
+      itheta = superTrack.itheta;
+      otheta = superTrack.otheta;
       at(266.9, vcal, tcal);           // 266.9 is approx u-coordinate of the front surface of the calorimeter
    }
    SuperTrack(const SuperTrack2D* vTrack, const SuperTrack2D* tTrack): TObject(), vTrack_(vTrack), tTrack_(tTrack) {
@@ -287,7 +291,7 @@ public:
    Double_t T(Double_t u=266.9) const {
      return tTrack_->at(u); 
    }
-   Double_t Angle() const {
+   Double_t Angle() {
       Double_t v_xu = 0;         // ratio of the 2D directional cosines (will be used later)
       Double_t t_xu = 0;
 
@@ -296,6 +300,8 @@ public:
       t_xu = tTrack_->itrack2D_->cx_/tTrack_->itrack2D_->cu_;
       // 3D directional cosine for u
       Double_t cu_i = 1./TMath::Sqrt(1. + (v_xu*v_xu + t_xu*t_xu));
+      itheta = 0;
+      if (cu_i < 1.) itheta = TMath::ACos(cu_i);                      // theta of the input track
       // 3D directional cosines for v and t
       Double_t cv_i = v_xu * cu_i;
       Double_t ct_i = t_xu * cu_i;
@@ -305,6 +311,8 @@ public:
       t_xu = tTrack_->otrack2D_->cx_/tTrack_->otrack2D_->cu_;
       // 3D directional cosine for u
       Double_t cu_o = 1./TMath::Sqrt(1. + (v_xu*v_xu + t_xu*t_xu));
+      otheta = 0;
+      if (cu_o < 1.) otheta = TMath::ACos(cu_o);                      // theta of the output track
       // 3D directional cosines for v and t
       Double_t cv_o = v_xu * cu_o;
       Double_t ct_o = t_xu * cu_o;
@@ -318,7 +326,7 @@ public:
       return vTrack_->hitSensor(sensorId) || tTrack_->hitSensor(sensorId);
    }
 
-   ClassDef(SuperTrack, 3);
+   ClassDef(SuperTrack, 4);
 };
 
 #ifdef __MAKECINT__
