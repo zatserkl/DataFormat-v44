@@ -131,7 +131,7 @@ public:
          tBoardLayer_[ilayer] = -1;
       }
       std::string phantom;
-      Int_t nblocks = -1;
+      Int_t nbricks = -1;
 
       const std::string run_str = "run";
       const std::string uvt_str = "uvt";
@@ -140,7 +140,7 @@ public:
       const std::string phantom_str = "phantom";
       const std::string none_str = "none";
       const std::string phantom_pyramid_str = "pyramid";
-      const std::string nblocks_str = "nblocks";
+      const std::string nbricks_str = "nbricks";
       const std::string phantom_water_str = "water";
       const std::string phantom_wire_str = "water";
 
@@ -240,13 +240,13 @@ public:
       ss >> phantom;
       //cout<< "--> phantom = " << phantom <<endl;
       if (phantom == phantom_pyramid_str) {
-         nblocks = -1;
-         ss >> nblocks;
-         if (nblocks == -1) {
-            cout<< "read error while expected integer number of blocks" <<endl;
+         nbricks = -1;
+         ss >> nbricks;
+         if (nbricks == -1) {
+            cout<< "read error while expected integer number of bricks" <<endl;
             return false;
          }
-         cout<< "phantom: " << phantom << " nblocks = " << nblocks <<endl;
+         cout<< "phantom: " << phantom << " nbricks = " << nbricks <<endl;
       }
       else if (phantom == phantom_water_str) {
          cout<< "phantom == " << phantom_water_str <<endl;

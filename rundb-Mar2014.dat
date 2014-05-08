@@ -1,5 +1,16 @@
 NB: data line should start from the word "run". All other lines will be are ignored. 
 
+run 46 uvt -192.3 -186.4 -142.2 -136.4 141.4 135.6 191.5 185.6 v-board 6 4 2 3 t-board 5 4 1 3 phantom none
 run 47 uvt -192.3 -186.4 -142.2 -136.4 141.4 135.6 191.5 185.6 v-board 6 4 2 3 t-board 5 4 1 3 phantom none
-run 51 uvt -217.7 -211.8 -167.6 -161.8 166.8 161.0 216.9 211.0 v-board 6 4 2 3 t-board 5 4 1 3 phantom pyramid nblocks 0
-run 701 uvt -217.7 -211.8 -167.6 -161.8 166.8 161.0 216.9 211.0 v-board 6 4 2 3 t-board 5 4 1 3 phantom pyramid nblocks 0
+run 51 uvt -217.7 -211.8 -167.6 -161.8 166.8 161.0 216.9 211.0 v-board 6 4 2 3 t-board 5 4 1 3 phantom pyramid nbricks 0
+run 700 uvt -217.7 -211.8 -167.6 -161.8 166.8 161.0 216.9 211.0 v-board 6 4 2 3 t-board 5 4 1 3 phantom pyramid nbricks 0
+run 701 uvt -217.7 -211.8 -167.6 -161.8 166.8 161.0 216.9 211.0 v-board 6 4 2 3 t-board 5 4 1 3 phantom pyramid nbricks 0
+run 702 uvt -217.7 -211.8 -167.6 -161.8 166.8 161.0 216.9 211.0 v-board 6 4 2 3 t-board 5 4 1 3 phantom pyramid nbricks 1
+run 703 uvt -217.7 -211.8 -167.6 -161.8 166.8 161.0 216.9 211.0 v-board 6 4 2 3 t-board 5 4 1 3 phantom pyramid nbricks 1
+run 704 uvt -217.7 -211.8 -167.6 -161.8 166.8 161.0 216.9 211.0 v-board 6 4 2 3 t-board 5 4 1 3 phantom pyramid nbricks 2
+run 705 uvt -217.7 -211.8 -167.6 -161.8 166.8 161.0 216.9 211.0 v-board 6 4 2 3 t-board 5 4 1 3 phantom pyramid nbricks 2
+run 706 uvt -217.7 -211.8 -167.6 -161.8 166.8 161.0 216.9 211.0 v-board 6 4 2 3 t-board 5 4 1 3 phantom pyramid nbricks 3
+run 707 uvt -217.7 -211.8 -167.6 -161.8 166.8 161.0 216.9 211.0 v-board 6 4 2 3 t-board 5 4 1 3 phantom pyramid nbricks 3
+run 708 uvt -217.7 -211.8 -167.6 -161.8 166.8 161.0 216.9 211.0 v-board 6 4 2 3 t-board 5 4 1 3 phantom pyramid nbricks 4
+run 709 uvt -217.7 -211.8 -167.6 -161.8 166.8 161.0 216.9 211.0 v-board 6 4 2 3 t-board 5 4 1 3 phantom pyramid nbricks 4
+run 710 uvt -217.7 -211.8 -167.6 -161.8 166.8 161.0 216.9 211.0 v-board 6 4 2 3 t-board 5 4 1 3 phantom pyramid nbricks 4
