@@ -390,7 +390,7 @@ public:
       }
       for (int ichan=0; ichan<5; ++ichan) for (int isample=0; isample<16; ++isample) sample[ichan][isample] = 0;
    }
-   Float_t SampleSum(Int_t chan, Int_t nfront, Int_t ntail, Double_t pedestal) {
+   Float_t SampleSum(Int_t chan, Int_t nfront, Int_t ntail, Double_t pedestal) const {
       if (chan < 0 || chan > 4) return 0;
       // find a position of the maximum
       Int_t imax = 0;
