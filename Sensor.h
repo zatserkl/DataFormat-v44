@@ -219,7 +219,7 @@ public:
       //cout<< "PCTSensors::PCTSensors" <<endl;
       //Sensor::CreateHitPool();
 
-      const Double_t pitch = 0.228;
+      //const Double_t pitch = 0.228;
       Int_t layer;                  // 0..3
       Int_t board;                  // board production number: V-boards: 0..6, T-boards 0..7
       Int_t dir;                    // chip direction wrt corresponding axis
@@ -270,7 +270,7 @@ public:
 
       Double_t firstStripVabs[7][2];      // absolute coordinate of the first strip
       sensor = 0;
-      for (int iboard=0; iboard<7; ++iboard) firstStripVabs[iboard][sensor] = geometry_->vPin_[0] + geometry_->firstStripV_[iboard][sensor] + 383*pitch;  // chip 0, strip 63
+      for (int iboard=0; iboard<7; ++iboard) firstStripVabs[iboard][sensor] = geometry_->vPin_[0] + geometry_->firstStripV_[iboard][sensor] + 383*geometry_->pitch;  // chip 0, strip 63
       sensor = 1;
       for (int iboard=0; iboard<7; ++iboard) firstStripVabs[iboard][sensor] = geometry_->vPin_[0] + geometry_->firstStripV_[iboard][sensor];  // chip 6, strip 63
       // for (int iboard=0; iboard<7; ++iboard) {
