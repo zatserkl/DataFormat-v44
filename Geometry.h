@@ -16,7 +16,7 @@ class Geometry {
 public:
    static Geometry* geometry_;
 public:
-   const Double_t pitch_ = 0.228;   // mm
+   const Double_t pitch_;           // = 0.228;   // mm
 
    // V-board constants
    Double_t vPin_[4];               // coordinate of the pin for the board in each layer
@@ -32,7 +32,7 @@ public:
    Double_t tdir_[16];              // direction (+1 or -1) of the sensor's abs strip number (same as the sensor chip address) wrt t-axis
    Double_t ut_[4];                 // u-coordinate of each t-layer
 public:
-   Geometry(Int_t the_run, const char* dbname)
+   Geometry(Int_t the_run, const char* dbname): pitch_(0.228)
    {
       geometry_ = this;
 
