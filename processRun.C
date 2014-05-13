@@ -149,7 +149,9 @@ void reco(const char* ifname, Int_t event1=0, Int_t event2=-1, const char* dbnam
    new TCanvas;
    hcal[0]->DrawCopy("colz");
 
-   cout<< "write " << otree->GetEntries() << " events into output file " << otree->GetCurrentFile()->GetName() <<endl;
+   //-- if (otree->GetCurrentFile()) cout<< "write " << otree->GetEntries() << " events into output file " << otree->GetCurrentFile()->GetName() <<endl;
+   //-- else cout<< "write " << otree->GetEntries() << " events into output file " << ofile->GetName() <<endl;
+   cout<< "write " << otree->GetEntries() << " events into output file " << ofile->GetName() <<endl;
    ofile->Write();
 }
 

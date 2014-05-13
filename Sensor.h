@@ -58,7 +58,7 @@ public:
    static void ClearPool() {
       if (poolSensorHit_) {
          // cout<< "ClearPool: poolSensorHit_->GetLast()+1 = " << poolSensorHit_->GetLast()+1 <<endl;
-         //-- poolSensorHit_->Clear();
+         poolSensorHit_->Clear();
       }
    }
    void clear() {

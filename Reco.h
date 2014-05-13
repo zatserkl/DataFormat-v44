@@ -47,6 +47,8 @@ public:
       , geometry_(geometry), pCTSensors_(pCTSensors), pCTEvent_(pCTEvent)
       , event_(event)
    {
+      //cout<< "Reco::Reco" <<endl;
+
       deltaT_ = pCTEvent_->deltaT;
       //cout<< "Reco::Reco: create pool" <<endl;
       //Sensor::CreateHitPool();
@@ -55,6 +57,11 @@ public:
       if (!poolTrack2D_) poolTrack2D_ = new TClonesArray("Track2D", 1024);
       if (!poolSuperTrack2D_) poolSuperTrack2D_ = new TClonesArray("SuperTrack2D", 128);
       if (!poolSuperTrack_) poolSuperTrack_ = new TClonesArray("SuperTrack", 16);
+
+      //cout<< "Sensor::poolSensorHit_->GetLast()+1 = " << Sensor::poolSensorHit_->GetLast()+1 <<endl;
+      //cout<< "poolTrack2D_->GetLast()+1 = " << poolTrack2D_->GetLast()+1 <<endl;
+      //cout<< "poolSuperTrack2D_->GetLast()+1 = " << poolSuperTrack2D_->GetLast()+1 <<endl;
+      //cout<< "poolSuperTrack_->GetLast()+1 = " << poolSuperTrack_->GetLast()+1 <<endl;
 
       //----------- pCTSensors_ = new PCTSensors();
       pCTSensors_->clear();
@@ -92,6 +99,7 @@ public:
    }
    ~Reco() {
       //cout<< "Reco::~Reco" <<endl;
+
       //for (std::list<const Track2D*>::const_iterator it=tin_.begin(); it!=tin_.end(); ++it) delete *it;
       //for (std::list<const Track2D*>::const_iterator it=tout_.begin(); it!=tout_.end(); ++it) delete *it;
       //for (std::list<const Track2D*>::const_iterator it=vin_.begin(); it!=vin_.end(); ++it) delete *it;
