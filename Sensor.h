@@ -270,7 +270,7 @@ public:
 
       Double_t firstStripVabs[7][2];      // absolute coordinate of the first strip
       sensor = 0;
-      for (int iboard=0; iboard<7; ++iboard) firstStripVabs[iboard][sensor] = geometry_->vPin_[0] + geometry_->firstStripV_[iboard][sensor] + 383*geometry_->pitch;  // chip 0, strip 63
+      for (int iboard=0; iboard<7; ++iboard) firstStripVabs[iboard][sensor] = geometry_->vPin_[0] + geometry_->firstStripV_[iboard][sensor] + 383*geometry_->pitch_;  // chip 0, strip 63
       sensor = 1;
       for (int iboard=0; iboard<7; ++iboard) firstStripVabs[iboard][sensor] = geometry_->vPin_[0] + geometry_->firstStripV_[iboard][sensor];  // chip 6, strip 63
       // for (int iboard=0; iboard<7; ++iboard) {
