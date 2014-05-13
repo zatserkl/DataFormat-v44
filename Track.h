@@ -200,8 +200,8 @@ public:
 public:
    SuperTrack2D(): TObject(), itrack2D_(0), otrack2D_(0) {}
    SuperTrack2D(const SuperTrack2D& superTrack2D): TObject(superTrack2D) {
-      itrack2D_ = new Track2D(*superTrack2D.itrack2D_);
-      otrack2D_ = new Track2D(*superTrack2D.otrack2D_);
+      itrack2D_ = superTrack2D.itrack2D_;
+      otrack2D_ = superTrack2D.otrack2D_;
    }
    SuperTrack2D(const Track2D* itrack2D, const Track2D* otrack2D): TObject(), itrack2D_(itrack2D), otrack2D_(otrack2D) {}
    ~SuperTrack2D() {
@@ -267,8 +267,8 @@ public:
 public:
    SuperTrack(): TObject(), vTrack_(0), tTrack_(0), angle(0), itheta(0), otheta(0), vcal(0), tcal(0) {}
    SuperTrack(const SuperTrack& superTrack): TObject(superTrack) {
-      vTrack_ = new SuperTrack2D(*superTrack.vTrack_);
-      tTrack_ = new SuperTrack2D(*superTrack.tTrack_);
+      vTrack_ = superTrack.vTrack_;
+      tTrack_ = superTrack.tTrack_;
       angle = superTrack.angle;
       itheta = superTrack.itheta;
       otheta = superTrack.otheta;
