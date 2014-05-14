@@ -17,6 +17,9 @@ void plotReco(Int_t event1=0, Int_t event2=-1, TTree* tree=0)
       return;
    }
 
+   Double_t ped[5] = {9.645, -20.484, -201.987, 62.966, -7.747};     // Celeste data
+   Double_t ucal = 216.9 + 40;                                       // approx position for the calorimeter entrance for runs >= 51
+
    const RecoEvent* recoEvent = 0;
    tree->SetBranchAddress("revent", &recoEvent);
 
@@ -48,12 +51,13 @@ void plotReco(Int_t event1=0, Int_t event2=-1, TTree* tree=0)
 
          if (superTrack->angle > 0.07) continue;      // apply cut on the angle between the tracks in the supertrack
          for (int ical=0; ical<5; ++ical) {
-            Float_t adc = recoEvent->a[ical];
+            //--old-- Float_t adc = recoEvent->a[ical];
+            Float_t adc = recoEvent->SampleSum(ical, 1, 2, ped[ical]);
             if (adc < 100) adc = 0;
             // hcal[ical]->Fill(superTrack->tcal, superTrack->vcal, adc);
             // hcal_i[ical]->Fill(superTrack->tcal, superTrack->vcal);
-            hcal[ical]->Fill(superTrack->T(-128.), superTrack->V(-128.), adc);
-            hcal_i[ical]->Fill(superTrack->T(-128.), superTrack->V(-128.));
+            hcal[ical]->Fill(superTrack->T(ucal), superTrack->V(ucal), adc);
+            hcal_i[ical]->Fill(superTrack->T(ucal), superTrack->V(ucal));
          }
       }
    }
