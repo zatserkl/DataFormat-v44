@@ -18,9 +18,9 @@ using std::cout;    using std::endl;
 ClassImp(Hit2D);
 ClassImp(SensorHit);
 ClassImp(CRay2D);
-ClassImp(CRay);
+//ClassImp(CRay);
 ClassImp(Track2D);
-ClassImp(Track);
+//ClassImp(Track);
 ClassImp(SuperTrack2D);
 ClassImp(SuperTrack);
 
@@ -421,7 +421,7 @@ public:
 
       sum = 0;
       for (int isample=n1; isample<=n2; ++isample) sum += sample[chan][isample];
-      sum -= (n2 - n1)*pedestal;
+      sum -= (n2 - n1 + 1)*pedestal;
 
       return sum;
    }
