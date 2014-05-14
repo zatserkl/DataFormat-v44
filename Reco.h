@@ -17,7 +17,10 @@ using std::cout;    using std::endl;
 
 ClassImp(Hit2D);
 ClassImp(SensorHit);
+ClassImp(CRay2D);
+ClassImp(CRay);
 ClassImp(Track2D);
+ClassImp(Track);
 ClassImp(SuperTrack2D);
 ClassImp(SuperTrack);
 
