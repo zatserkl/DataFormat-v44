@@ -48,8 +48,8 @@ void reco(const char* ifname, Int_t event1=0, Int_t event2=-1, const char* dbnam
    RecoEvent* recoEvent = new RecoEvent();
 
    std::string ofname;
-   if (event1 != 0 || event2 != tree->GetEntries()-1) Form("%s-%d-%d.reco.root",ifname,event1,event2);
-   else ofname = ofname = Form("%s.reco.root",ifname);
+   if (event1 != 0 || event2 != tree->GetEntries()-1) ofname = Form("%s-%d-%d.reco.root",ifname,event1,event2);
+   else ofname = Form("%s.reco.root",ifname);
 
    TFile* ofile = new TFile(ofname.c_str(), "recreate");
    TTree* otree = new TTree("r", Form("Reconstruction of %s",ifname));
