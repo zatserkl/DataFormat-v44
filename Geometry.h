@@ -142,7 +142,7 @@ public:
       const std::string phantom_pyramid_str = "pyramid";
       const std::string nbricks_str = "nbricks";
       const std::string phantom_water_str = "water";
-      const std::string phantom_wire_str = "water";
+      const std::string phantom_wire_str = "wire";
 
       std::ifstream file(dbname);
       if (!file) {
