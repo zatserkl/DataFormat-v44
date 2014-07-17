@@ -370,8 +370,6 @@ int main (int argc, char* argv[])
   //--  ROOT class tree
   //--
   TFile* ofile = 0;
-  //if (event2 >= event1) ofile = new TFile(Form("%s-%d-%d.root", inputFileName.c_str(),event1,event2), "recreate");
-  //else ofile = new TFile(Form("%s-%d.root", inputFileName.c_str(),event1), "recreate");
   if (event1 == 0 && event2 == -1) ofile = new TFile(Form("%s.root", inputFileName.c_str()), "recreate");
   else if (event2 == -1) ofile = new TFile(Form("%s-%d.root", inputFileName.c_str(),event1), "recreate");
   else ofile = new TFile(Form("%s-%d-%d.root", inputFileName.c_str(),event1,event2), "recreate");
@@ -386,20 +384,33 @@ int main (int argc, char* argv[])
 
   const unsigned char pattern_run_header_identifier[3] = {0xD2, 0x55, 0x4E};     // 1R U N
 
-  // run header identifier (including the first zero byte)
+  // run header identifier
 
   unsigned char buf_run_header_identifier[4];
-  for (int ibyte=0; ibyte<4; ++ibyte) buf_run_header_identifier[ibyte] = bitBuffer.fillbyte();
-  // assert(buf_run_header_identifier[0] == 0);
-  // assert(buf_run_header_identifier[1] == pattern_run_header_identifier[0]);
-  // assert(buf_run_header_identifier[2] == pattern_run_header_identifier[1]);
-  // assert(buf_run_header_identifier[3] == pattern_run_header_identifier[2]);
+  for (int ibyte=0; ibyte<3; ++ibyte) buf_run_header_identifier[ibyte] = bitBuffer.fillbyte();
+
   bool good_run_header = true
-    && buf_run_header_identifier[0] == 0
-    && buf_run_header_identifier[1] == pattern_run_header_identifier[0]
-    && buf_run_header_identifier[2] == pattern_run_header_identifier[1]
-    && buf_run_header_identifier[3] == pattern_run_header_identifier[2]
+    && buf_run_header_identifier[0] == pattern_run_header_identifier[0]
+    && buf_run_header_identifier[1] == pattern_run_header_identifier[1]
+    && buf_run_header_identifier[2] == pattern_run_header_identifier[2]
   ;
+
+  int ntry = 0;
+  while (!good_run_header) {
+    ++ntry;
+    // cout<< "ntry = " << ntry <<endl;
+    if (ntry > 10) break;
+    buf_run_header_identifier[0] = buf_run_header_identifier[1];
+    buf_run_header_identifier[1] = buf_run_header_identifier[2];
+    buf_run_header_identifier[2] = bitBuffer.fillbyte();
+
+    good_run_header = true
+      && buf_run_header_identifier[0] == pattern_run_header_identifier[0]
+      && buf_run_header_identifier[1] == pattern_run_header_identifier[1]
+      && buf_run_header_identifier[2] == pattern_run_header_identifier[2]
+    ;
+  }
+
   if (!good_run_header) {
     cout<< "This is not a pCT binary data file" <<endl;
     return 0;
@@ -493,7 +504,7 @@ int main (int argc, char* argv[])
       if (event < event1) continue;
       if (event2 >= event1 && event > event2) break;
 
-      if (event < 10 || (event < 100000 && event%10000 == 0) || (event%100000 == 0)) cout<< "\n------------------ event = " << event << " --------------------" <<'\n';
+      if (event < 10 || (event < 100000 && event%10000 == 0) || (event%100000 == 0)) cout<< "------------------ event = " << event << " --------------------" <<'\n';
       //-- cout<< "\n------------------ event = " << event << " --------------------" <<'\n';
 
       pCTEvent->Clear("C");
