@@ -376,7 +376,7 @@ int main (int argc, char* argv[])
 
   PCTEvent* pCTEvent = new PCTEvent();
 
-  TTree* tree = new TTree("t", "pCT readout tree");
+  TTree* tree = new TTree("t", inputFileName.c_str());
   tree->SetMarkerColor(2);
   tree->Branch("event", "PCTEvent", &pCTEvent);
 
