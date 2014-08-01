@@ -418,7 +418,8 @@ int main (int argc, char* argv[])
 
   // read the run header
 
-  RunHeader runHeader;
+  RunHeader runHeader;    // create RunHeader object to store in the output tree the info from the run header
+
   char buf_run[3];
   for (int ibyte=0; ibyte<3; ++ibyte) buf_run[ibyte] = bitBuffer.fillbyte();
   char buf_time[4];
