@@ -77,6 +77,9 @@ public:
          poolSensorHit_ = new TClonesArray("SensorHit",1440);
       }
    }
+   void Info() const {
+      cout<< "sensorId_ = " << sensorId_ << " u_ = " << u_ << " strip1_ = " << strip1_ << " last strip = " << strip1_+dir_*383*pitch_ << " dir_ = " << dir_ <<endl;
+   }
    virtual ~Sensor() {}
    void Set_strip1(Double_t strip1, Double_t dir) {
       strip1_ = strip1;
@@ -341,6 +344,16 @@ public:
             tSensor[ilayer][isensor].Set_strip1_dir_info(geometry_->ut_[ilayer], pin + dir*geometry_->firstStripT_[board][isensor], dir, ilayer, isensor);
          }
       }
+
+      // cout<< "V-sensors" <<endl;
+      // for (int ilayer=0; ilayer<4; ++ilayer) for (int isensor=0; isensor<2; ++isensor) {
+      //    vSensor[ilayer][isensor].Info();
+      // }
+
+      // cout<< "T-sensors" <<endl;
+      // for (int ilayer=0; ilayer<4; ++ilayer) for (int isensor=0; isensor<4; ++isensor) {
+      //    tSensor[ilayer][isensor].Info();
+      // }
    }
    void AddCluster(Int_t FPGA, Int_t chip, Int_t nfirst, Int_t nstrips) {
       int sensor;
