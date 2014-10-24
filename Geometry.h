@@ -16,7 +16,8 @@ class Geometry {
 public:
    static Geometry* geometry_;
 public:
-   const Double_t pitch_;           // = 0.228;   // mm
+   const Double_t pitch_;                   // = 0.228 mm
+   const Double_t offset_rear_telescope_;   // 8 mm in positive t-direction
 
    // V-board constants
    Double_t vPin_[4];               // coordinate of the pin for the board in each layer
@@ -31,13 +32,21 @@ public:
    Double_t firstStripT_[10][4];    // distance from alignment pin to the first strip for each sensor for all board Ids
    Double_t tdir_[16];              // direction (+1 or -1) of the sensor's abs strip number (same as the sensor chip address) wrt t-axis
    Double_t ut_[4];                 // u-coordinate of each t-layer
+   Double_t angle_;
 public:
-   Geometry(Int_t the_run, const char* dbname): pitch_(0.228)
+   Geometry(Int_t the_run, const char* dbname, Double_t offset_rear_telescope=8.): pitch_(0.228)
+                                                                                   , offset_rear_telescope_(offset_rear_telescope)
+                                                                                   , angle_(-1)
    {
       geometry_ = this;
 
       // read the database
-      assert(readdb(the_run, dbname));
+      //-- assert(readdb(the_run, dbname));
+      //--beamtest-- if (!readdb(the_run, dbname)) readdb(0,dbname);     // if run was not found in the database use settings for the run 0
+      if (!readdb(the_run, dbname)) {
+        cout<< "***Error Geometry::Geometry: Run " << the_run << " was not found in the database" <<endl;
+        exit(0);
+      }
 
       // set parameters which are constants
 
@@ -47,14 +56,23 @@ public:
 
       Double_t vPin[4] = {0.055,0.055,0.055,0.055};
       //int vBoardLayer_[4] = {6,4,2,3};  	      // fpga to V-board translation; this will change if spares are swapped
+      //--March-- Double_t firstStripV[7][2] = {		// Distance from the alignment pin to the first strip
+      //--March--    {-43.7193, -43.716},             // Board V0 doesn't exist
+      //--March--    {-43.7193, -43.716},
+      //--March--    {-43.7193, -43.716},
+      //--March--    {-43.7193, -43.716},
+      //--March--    {-43.7193, -43.716},	            // These numbers are actually from V4
+      //--March--    {-43.7193, -43.716},
+      //--March--    {-43.5855, -43.5865}             // these are actually from T6
+      //--March-- };
       Double_t firstStripV[7][2] = {		// Distance from the alignment pin to the first strip
-         {-43.7193, -43.716},             // Board V0 doesn't exist
-         {-43.7193, -43.716},
-         {-43.7193, -43.716},
-         {-43.7193, -43.716},
-         {-43.7193, -43.716},	            // These numbers are actually from V4
-         {-43.7193, -43.716},
-         {-43.5855, -43.5865}             // these are actually from T6
+         {-999., -999.},                  // Board V0 doesn't exist, we manufactured 6 boards
+         {-43.727, -43.687},              // Board V1
+         {-43.682, -43.681},              // Board V2
+         {-43.702, -43.713},              // Board V3
+         {-43.7193, -43.716},	          // Board V4
+         {-43.7193, -43.716},             // No survey yet for Board V5
+         {-43.686, -43.687}               // Board V6, including a typo correction June 9 that changed the numbers by 0.1 mm
       };
 
       for (int ilayer=0; ilayer<4; ++ilayer) vPin_[ilayer] = vPin[ilayer];
@@ -85,14 +103,23 @@ public:
       //Double_t tDir[4] = {-1.0, -1.0, 1.0, 1.0};               // T direction of increasing strip number per layer
 
       //Int_t tBoard[4] = {5, 4, 1, 3};     // T-layer to physical T board translation. This will change if spares are swapped in!
+      //--March-- Double_t firstStripT[7][4] = {      // First strip location rel to pin for each sensor on each physical board
+      //--March--    {-999., -999., -999., -999.},		// Board 0 doesn't exist.  We manufactured 6 boards.
+      //--March--    {38.58, 126.85, 215.11, 303.37},
+      //--March--    {38.58, 126.85, 215.11, 303.37},
+      //--March--    {38.58, 126.85, 215.11, 303.37},
+      //--March--    {38.58, 126.85, 215.11, 303.37}, // These numbers actually come from board T4
+      //--March--    {38.62, 126.90, 215.16, 303.41}, // these numbers actually come from board T5
+      //--March--    {38.58, 126.85, 215.11, 303.37} 
+      //--March-- };
       Double_t firstStripT[7][4] = {      // First strip location rel to pin for each sensor on each physical board
          {-999., -999., -999., -999.},		// Board 0 doesn't exist.  We manufactured 6 boards.
-         {38.58, 126.85, 215.11, 303.37},
-         {38.58, 126.85, 215.11, 303.37},
-         {38.58, 126.85, 215.11, 303.37},
-         {38.58, 126.85, 215.11, 303.37}, // These numbers actually come from board T4
-         {38.62, 126.90, 215.16, 303.41}, // these numbers actually come from board T5
-         {38.58, 126.85, 215.11, 303.37} 
+         {38.60, 126.87, 215.15, 303.42},   // Board T1
+         {38.48, 126.76, 215.04, 303.32},   // Board T2
+         {38.69, 126.95, 215.23, 303.57},   // Board T3
+         {38.58, 126.85, 215.11, 303.37},   // Board T4
+         {38.62, 126.90, 215.16, 303.41},   // Board T5
+         {38.58, 126.85, 215.11, 303.37}    // Board T6, no survey has been done
       };
 
       for (int ilayer=0; ilayer<4; ++ilayer) tPin_[ilayer] = tPin[ilayer];
@@ -143,6 +170,9 @@ public:
       const std::string nbricks_str = "nbricks";
       const std::string phantom_water_str = "water";
       const std::string phantom_wire_str = "wire";
+      const std::string phantom_catphan_str = "catphan";
+      const std::string phantom_sensitom_str = "sensitom";
+      const std::string phantom_RodCenter_str = "RodCenter";
 
       std::ifstream file(dbname);
       if (!file) {
@@ -154,14 +184,13 @@ public:
 
       bool found = false;
       std::string line;
-      std::stringstream ss;
       std::string word;
+
       while (std::getline(file, line))
       {
-         //cout<< "line = " << line <<endl;
          if (line.size() == 0) continue;
 
-         ss.str(line);
+         std::istringstream ss(line);   // create a stringstream object for each loop iteration to avoid blocking by eof from the last read
 
          // read the first word
          ss >> word;
@@ -178,12 +207,14 @@ public:
       }
 
       if (!found) {
-         cout<< "Run " << the_run << " was not found in the database" <<endl;
+         cout<< "***Error Geometry::readdb: Run " << the_run << " was not found in the database" <<endl;
          return false;
       }
 
       // found line for the_run
-      cout<< line <<endl;
+
+      std::istringstream ss(line);    // create a new stringstream
+      ss >> word >> run;              // remove from the input stream already read values
 
       // u coordinates
       ss >> word;
@@ -253,6 +284,18 @@ public:
       }
       else if (phantom == phantom_wire_str) {
          cout<< "phantom == " << phantom_wire_str <<endl;
+      }
+      else if (phantom == phantom_catphan_str) {
+         ss >> word >> angle_;
+         cout<< "phantom == " << phantom_catphan_str << " angle_ = " << angle_ <<endl;
+      }
+      else if (phantom == phantom_sensitom_str) {
+         ss >> word >> angle_;
+         cout<< "phantom == " << phantom_sensitom_str << " angle_ = " << angle_ <<endl;
+      }
+      else if (phantom == phantom_RodCenter_str) {
+         ss >> word >> angle_;
+         cout<< "phantom == " << phantom_RodCenter_str << " angle_ = " << angle_ <<endl;
       }
       else if (phantom == none_str) {
          cout<< "phantom == " << none_str <<endl;
