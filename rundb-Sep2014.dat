@@ -1,0 +1,32 @@
+NB: data line should start from the word "run". All other lines will be are ignored. 
+
+run 0 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom none
+run 1 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom none
+
+#
+# Sep2014
+#
+
+run 5 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom none
+run 6 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom none
+run 7 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom none
+run 8 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom none
+run 11 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom none
+run 12 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom none
+
+run 15 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom none
+run 16 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom none
+run 17 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom none
+run 18 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom none
+
+run 25 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom pyramid nbricks 1
+run 26 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom pyramid nbricks 2
+run 27 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom pyramid nbricks 4
+run 28 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom pyramid nbricks 4
+
+run 42 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom none
+run 43 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom none
+run 44 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom none
+run 45 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom none
+run 46 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom none
+run 47 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom none
