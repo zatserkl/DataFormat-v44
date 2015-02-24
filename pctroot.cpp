@@ -6,7 +6,11 @@
    cl -Z7 -MDd -GR -EHsc -MT -Ox pctroot.cpp DataFormat_dict.cxx -I C:\root\include /link -LIBPATH:C:\root\lib libCore.lib libCint.lib libGui.lib libRIO.lib libTree.lib libHist.lib libGraf.lib libMinuit.lib
 
    Mac OSX:
+   ROOT 5:
    rootcint -f DataFormat_dict.cxx -c DataFormat.h DataFormat_linkdef.h
+   clang++ -Wall `$ROOTSYS/bin/root-config --cflags --glibs` pctroot.cpp -o pctroot DataFormat_dict.cxx
+   ROOT 6:
+   rootcling -f DataFormat_dict.cxx -c DataFormat.h
    clang++ -Wall `$ROOTSYS/bin/root-config --cflags --glibs` pctroot.cpp -o pctroot DataFormat_dict.cxx
 
    Scientific Linux 6.5
@@ -59,8 +63,16 @@ int loadEvent(BitBuffer& bitBuffer, PCTEvent* pCTEvent)
   // cout<< "pCT_Event::loadEvent" <<'\n';
 
   // read 36-bit event time tag (in clock cycles)
+  
   std::bitset<36> eventTimeTag;
   for (int i=35; i>=0; --i) eventTimeTag.set(i,bitBuffer.getbit());
+  //--std-- cout<< "loadEvent: eventTimeTag[0] = " << eventTimeTag[0] << " loadEvent: eventTimeTag[35] = " << eventTimeTag[35] << " pCTEvent->timeTag = " << pCTEvent->timeTag <<endl;
+
+  //--timePix-- std::bitset<1> startBit;
+  //--timePix-- startBit.set(0,bitBuffer.getbit());
+  //--timePix-- pCTEvent->startBit = startBit.to_ulong();
+  //--timePix-- std::bitset<35> eventTimeTag;
+  //--timePix-- for (int i=34; i>=0; --i) eventTimeTag.set(i,bitBuffer.getbit());
   pCTEvent->timeTag = eventTimeTag.to_ulong();
   // cout<< "pCTEvent->timeTag = " << pCTEvent->timeTag <<endl;
 
@@ -143,7 +155,12 @@ int loadEvent(BitBuffer& bitBuffer, PCTEvent* pCTEvent)
       //--debug-- cout<<"\t"<< ichip << "\t trackerChip->address = " << trackerChip->address << " numClust = " << trackerChip->numClust <<endl;
 
       // Loop over clusters
-      for (int icluster=0; icluster<trackerChip->numClust; icluster++)
+      Int_t numClust_max = trackerChip->numClust;
+      if (numClust_max > 10) {
+        cout<< "--> reduce the numClust from " << trackerChip->numClust << " to 10" <<endl;
+        numClust_max = 10;
+      }
+      for (int icluster=0; icluster<numClust_max; icluster++)
       {
         //... 6-bit number of strips minus 1 (0..10)
         trackerChip->nstrips[icluster] = bitBuffer.fillpart(6) + 1;    // assigned nstrips[icluster]
@@ -319,52 +336,7 @@ int main (int argc, char* argv[])
 
   std::string inputFileName = argv[1];
 
-  // BitBuffer bitBuffer(inputFileName.c_str(), 32);
-  // BitBuffer bitBuffer(inputFileName.c_str(), 128);
   BitBuffer bitBuffer(inputFileName.c_str(), 1024);
-  // BitBuffer bitBuffer(inputFileName.c_str(), 1048576);
-
-  // Define Root stuff for the output ntuple
-  Float_t PhCh0, PhCh1, PhCh2, PhCh3, PhCh4, PhCh5;
-  Float_t PdCh0, PdCh1, PdCh2, PdCh3, PdCh4;            //--orig , PdCh5;
-  Int_t numLyrs, numClust, evtNum, CRCerr, NhitLyr[12], numChipLyr[12];
-  Float_t stripLyr[12], strip2Lyr[12], strip3Lyr[12], deltaT;
-
-  TFile *F = new TFile(Form("%s-pCT_ntuple.root",inputFileName.c_str()),"recreate");
-  TTree *T = new TTree("T","pct");
-  T->Branch("PdCh0",&PdCh0,"PdCh0/F");				//Digitizer channel 0 pedestal
-  T->Branch("PdCh1",&PdCh1,"PdCh1/F");				//Digitizer channel 1 pedestal
-  T->Branch("PdCh2",&PdCh2,"PdCh2/F");				//Digitizer channel 2 pedestal
-  T->Branch("PdCh3",&PdCh3,"PdCh3/F");				//Digitizer channel 3 pedestal
-  T->Branch("PdCh4",&PdCh4,"PdCh4/F");				//Digitizer channel 4 pedestal
-  T->Branch("PhCh0",&PhCh0,"PhCh0/F");				//Digitizer channel 0 pulse height
-  T->Branch("PhCh1",&PhCh1,"PhCh1/F");				//Digitizer channel 1 pulse height
-  T->Branch("PhCh2",&PhCh2,"PhCh2/F");				//Digitizer channel 2 pulse height
-  T->Branch("PhCh3",&PhCh3,"PhCh3/F");				//Digitizer channel 3 pulse height
-  T->Branch("PhCh4",&PhCh4,"PhCh4/F");				//Digitizer channel 4 pulse height
-  T->Branch("PhCh5",&PhCh5,"PhCh5/F");				//Digitizer channel 5 pulse height (not normally present in pCT)
-  T->Branch("numLyrs",&numLyrs,"numLyrs/I");			//Number of tracker layers hit
-  T->Branch("numChipLyr0",&numChipLyr[0],"numChipLyr0/I");   //Number of chips in layer 0
-  T->Branch("numChipLyr5",&numChipLyr[5],"numChipLyr5/I");   //Number of chips in layer 5
-  T->Branch("numClust",&numClust,"numClust/I");		//Number of clusters total
-  T->Branch("evtNum",&evtNum,"evtNum/I");				//Event number
-  T->Branch("CRCerr",&CRCerr,"CRCerr/I");				//CRC error flag
-  T->Branch("NhitLyr0",&NhitLyr[0],"NhitLyr0/I");
-  T->Branch("NhitLyr1",&NhitLyr[1],"NhitLyr1/I");
-  T->Branch("NhitLyr5",&NhitLyr[5],"NhitLyr5/I");
-  T->Branch("stripLyr0",&stripLyr[0],"stripLyr0/F");	//Strip hit in fpga 0
-  T->Branch("stripLyr1",&stripLyr[1],"stripLyr1/F");	//Strip hit in fpga 1
-  T->Branch("stripLyr5",&stripLyr[5],"stripLyr5/F");	//Strip hit in fpga 5
-  T->Branch("stripLyr7",&stripLyr[7],"stripLyr7/F");	//Strip hit in fpga 7
-  T->Branch("strip2Lyr0",&strip2Lyr[0],"strip2Lyr0/F");	//Strip hit in fpga 0
-  T->Branch("strip2Lyr1",&strip2Lyr[1],"strip2Lyr1/F");	//Strip hit in fpga 1
-  T->Branch("strip2Lyr5",&strip2Lyr[5],"strip2Lyr5/F");	//Strip hit in fpga 5
-  T->Branch("strip2Lyr7",&strip2Lyr[7],"strip2Lyr7/F");	//Strip hit in fpga 7
-  T->Branch("strip3Lyr0",&strip3Lyr[0],"strip3Lyr0/F");	//Strip hit in fpga 0
-  T->Branch("strip3Lyr1",&strip3Lyr[1],"strip3Lyr1/F");	//Strip hit in fpga 1
-  T->Branch("strip3Lyr5",&strip3Lyr[5],"strip3Lyr5/F");	//Strip hit in fpga 5
-  T->Branch("strip3Lyr7",&strip3Lyr[7],"strip3Lyr7/F");	//Strip hit in fpga 7
-  T->Branch("deltaT",&deltaT,"deltaT/F");				//Time since previous trigger
 
   //--
   //--  ROOT class tree
@@ -419,24 +391,33 @@ int main (int argc, char* argv[])
   // read the run header
 
   RunHeader runHeader;    // create RunHeader object to store in the output tree the info from the run header
-
   char buf_run[3];
   for (int ibyte=0; ibyte<3; ++ibyte) buf_run[ibyte] = bitBuffer.fillbyte();
   char buf_time[4];
   for (int ibyte=0; ibyte<4; ++ibyte) buf_time[ibyte] = bitBuffer.fillbyte();
   char buf_timeTag = bitBuffer.fillbyte();
   char buf_version = bitBuffer.fillbyte();
-  runHeader.Fill(buf_run, buf_time, buf_timeTag, buf_version);
+
+  int angle10 = 0;
+  UChar_t version = buf_version;
+  if (version > 61)                 // version 61 was used for the Mar2014 beam test
+  {
+    // the 12-bit stage angle, in tens of degree was introduced from May 2014
+    std::bitset<12> angle_msb;
+    for (int i=11; i>=0; --i) angle_msb.set(i,bitBuffer.getbit());
+    angle10 = angle_msb.to_ulong();
+  }
+
+  runHeader.Fill(buf_run, buf_time, buf_timeTag, buf_version, angle10);
   cout<< "runHeader: Run = " << runHeader.GetRun() << " timeTag = " << runHeader.GetTimeTag() << " version = " << runHeader.GetVersion() <<endl;
   time_t start_time = runHeader.GetTime();
   //--g++ cout<< "run start time: " << std::ctime(&start_time);
   cout<< "run start time: " << ctime(&start_time);
 
+  cout<< "runHeader.GetAngle() = " << runHeader.GetAngle() <<endl;
+
   tree->GetUserInfo()->Add(&runHeader);
 
-  // Loop over events in the input stream
-
-  int evtCnt = 0;
   int event = -1;                         // AZ event counter
 
   const unsigned char pattern[3] = {0xF0, 0x43, 0x54};                // 1p C T
@@ -467,10 +448,6 @@ int main (int argc, char* argv[])
       Int_t nzeros = 0;
       while (!found_event)
       {
-        //-- buf[0] = buf[1];
-        //-- buf[1] = buf[2];
-        //-- buf[2] = bitBuffer.fillbyte();
-
         buf[0] = (buf[0] << 4) | (buf[1] >> 4);
         buf[1] = (buf[1] << 4) | (buf[2] >> 4);
         buf[2] = (buf[2] << 4) | bitBuffer.fillpart(4);
@@ -487,9 +464,11 @@ int main (int argc, char* argv[])
         ;
 
         if (buf[2] == 0) nzeros++;
-        if (nzeros > 3) {
+
+        const Int_t nzeros_max = 3;
+        if (nzeros > nzeros_max) {
           // probably we see the end of file filled by zeros
-          cout<< "found 4 consecutive zero bytes: probably the rest of file is filled with zeros" <<endl;
+          cout<< "found " << nzeros_max+1 << " consecutive zero bytes: probably the rest of file is filled with zeros" <<endl;
           break;
         }
       }
@@ -528,165 +507,12 @@ int main (int argc, char* argv[])
       //--debug-- cout<< "---------- tree->Fill -----------" <<endl;
       tree->Fill();
 
-      //      Event analysis:  fill up a Root ntuple
-      ///// evtNum = thisEvent->Event->evtNum;
-      evtNum = pCTEvent->evt;
-      ///// if (evtCnt % 1000 == 0) cout << "Event count " << evtCnt << " Event number " << evtNum << "\n";
-      ///// CRCerr = thisEvent->Event->CRCerr;
-      CRCerr = pCTEvent->CRCError;
-      ///// deltaT = thisEvent->Event->DeltaT;
-      deltaT = pCTEvent->deltaT;
-      int brd=0;
-      ///// //--orig int enrgTag0= thisEvent->Event->Board[0].enrgTag;
-      ///// //--orig int enrgTag1= thisEvent->Event->Board[1].enrgTag;
-      ///// //		if (enrgTag0 != enrgTag1) cout << "enrg tag mismatch: " << enrgTag0 << " vs " << enrgTag1;
-      if (pCTEvent->energyBoard[brd].numChan>0 || pCTEvent->energyBoard[brd].numSamples>0) {
-        /////   //			if (thisEvent->Event->Board[brd].enrgTag != evtNum % 4) cout << "tag mismatch, energy tag=" << thisEvent->Event->Board[brd].enrgTag << "\n";
-        if (pCTEvent->energyBoard[brd].reduced) {
-          PhCh0 = pCTEvent->energyBoard[brd].pulse[0];  PdCh0 = pCTEvent->energyBoard[brd].pedestal[0];
-          PhCh1 = pCTEvent->energyBoard[brd].pulse[1];	PdCh1 = pCTEvent->energyBoard[brd].pedestal[1];
-          PhCh2 =	pCTEvent->energyBoard[brd].pulse[2];	PdCh2 = pCTEvent->energyBoard[brd].pedestal[2];
-        } else {
-          PhCh0 = 0.; PhCh1 = 0.; PhCh2 = 0.;
-          /// enrgSamp *thisSamp = thisEvent->Event->Board[brd].firstSample;
-          //EnergySample* energySample = (EnergySample*) pCTEvent->energyBoard[brd].samples->At(0);
-          //if (thisSamp != 0)
-          if (pCTEvent->energyBoard[brd].samples->GetLast()+1 > 0)
-          {
-            EnergySample* energySample0 = (EnergySample*) pCTEvent->energyBoard[brd].samples->At(0);
-            int ped0 = energySample0->pulse[0]; PdCh0 = ped0;
-            int ped1 = energySample0->pulse[1]; PdCh1 = ped1;
-            int ped2 = energySample0->pulse[2]; PdCh2 = ped2;
-            //while (thisSamp != 0)
-            for (int isample=1; isample<pCTEvent->energyBoard[brd].samples->GetLast()+1; ++isample)
-            {
-              EnergySample* energySample = (EnergySample*) pCTEvent->energyBoard[brd].samples->At(isample);
-              PhCh0 = PhCh0 + energySample->pulse[0] - ped0;
-              PhCh1 = PhCh1 + energySample->pulse[1] - ped1;
-              PhCh2 = PhCh2 + energySample->pulse[2] - ped2;
-            }
-          }
-        }
-      } else {
-        PhCh0 = 0; PdCh0 = 0;
-        PhCh1 = 0; PdCh1 = 0;
-        PhCh2 = 0; PdCh2 = 0;
-      }
-      brd=1;
-      if (pCTEvent->energyBoard[brd].numChan>0 || pCTEvent->energyBoard[brd].numSamples>0) {
-        /////   //			if (thisEvent->Event->Board[brd].enrgTag != evtNum % 4) cout << "tag mismatch, energy tag=" << thisEvent->Event->Board[brd].enrgTag << "\n";
-        if (pCTEvent->energyBoard[brd].reduced) {
-          PhCh3 = pCTEvent->energyBoard[brd].pulse[0];  PdCh3 = pCTEvent->energyBoard[brd].pedestal[0];
-          PhCh4 = pCTEvent->energyBoard[brd].pulse[1];	PdCh4 = pCTEvent->energyBoard[brd].pedestal[1];
-          PhCh5 =	pCTEvent->energyBoard[brd].pulse[2];
-        } else {
-          PhCh3 = 0.; PhCh4 = 0.; PhCh5 = 0.;
-          int ped3 = 0; int ped4 = 0; int ped5 = 0;
-          /// enrgSamp *thisSamp = thisEvent->Event->Board[brd].firstSample;
-          //EnergySample* energySample = (EnergySample*) pCTEvent->energyBoard[brd].samples->At(0);
-          //if (thisSamp != 0)
-          if (pCTEvent->energyBoard[brd].samples->GetLast()+1 > 0)
-          {
-            EnergySample* energySample0 = (EnergySample*) pCTEvent->energyBoard[brd].samples->At(0);
-            ped3 = energySample0->pulse[0]; PdCh3 = ped3;
-            ped4 = energySample0->pulse[1]; PdCh4 = ped4;
-            ped5 = energySample0->pulse[2];
-            //while (thisSamp != 0)
-            for (int isample=1; isample<pCTEvent->energyBoard[brd].samples->GetLast()+1; ++isample)
-            {
-              EnergySample* energySample = (EnergySample*) pCTEvent->energyBoard[brd].samples->At(isample);
-              PhCh3 = PhCh3 + energySample->pulse[0] - ped3;
-              PhCh4 = PhCh4 + energySample->pulse[1] - ped4;
-              PhCh5 = PhCh5 + energySample->pulse[2] - ped5;
-            }
-          }
-        }
-      } else {
-        PhCh3 = 0; PdCh3 = 0;
-        PhCh4 = 0; PdCh4 = 0;
-        PhCh5 = 0;
-      }
-
-      numLyrs = 0;
-      numClust = 0;
-      for (int lyr=0; lyr<12; lyr++) {
-        NhitLyr[lyr] = 0;
-        stripLyr[lyr] = -999.;
-        strip2Lyr[lyr] = -999.;
-        numChipLyr[lyr] = pCTEvent->trackerFPGA[lyr].numChips;
-        if (pCTEvent->trackerFPGA[lyr].numChips > 0) {
-          //--orig int lyrTag= thisEvent->Event->Lyr[lyr].evtTag % 4;
-          //				if (lyrTag != enrgTag0) cout << "Tkr tag mismatch, layer " << lyr << " tag=" << lyrTag << "\n";
-          //				if (thisEvent->Event->Lyr[lyr].evtTag != evtNum % 8) cout << "Tkr tag mismatch, evtTag=" << thisEvent->Event->Lyr[lyr].evtTag << "\n";
-          numLyrs++;
-          //tkrChip *thisChip = thisEvent->Event->Lyr[lyr].firstChip;
-          int stripOne1 = -999;
-          int stripOneLen;
-          int stripOneChip;
-          int stripTwo1 = -999;
-          int stripTwoLen = -999;
-          int stripTwoChip = -999;
-          //while (thisChip != 0)
-          for (int ichip=0; ichip<pCTEvent->trackerFPGA[lyr].numChips; ++ichip)
-          {
-            TrackerChip* trackerChip = (TrackerChip*) pCTEvent->trackerFPGA[lyr].chips->At(ichip);
-            numClust = numClust + trackerChip->numClust;
-            if (numClust > 0) {
-              //tkrClust *thisClust = thisChip->firstClust;
-              //while (thisClust != 0)
-              for (int icluster=0; icluster<numClust; ++icluster)
-              {
-                NhitLyr[lyr]++;
-                if (NhitLyr[lyr]==1) {
-                  stripLyr[lyr] = 64.0*(trackerChip->address) + 63.0-(trackerChip->nfirst[icluster] + (trackerChip->nstrips[icluster]-1.0)/2.);
-                  stripOne1 = trackerChip->nfirst[icluster];
-                  stripOneLen = trackerChip->nstrips[icluster];
-                  stripOneChip = trackerChip->address;
-                } 
-                if (NhitLyr[lyr]==2) {
-                  if (trackerChip->nfirst[icluster] + trackerChip->nstrips[icluster]-1 == 63 && stripOne1 == 0 && trackerChip->address == stripOneChip + 1) {   //Cluster continued from previous chip 
-                    stripLyr[lyr] = 64.0*(trackerChip->address) + 63.0-(trackerChip->nfirst[icluster] + (trackerChip->nstrips[icluster]+stripOneLen-1.0)/2.);
-                    //									cout << "1: Chip " << stripOneChip << " length= " << stripOneLen << " strip " << stripOne1 << "\n";
-                  }
-                  else {
-                    strip2Lyr[lyr] = 64.0*(trackerChip->address) + 63.0-(trackerChip->nfirst[icluster] + (trackerChip->nstrips[icluster]-1.0)/2.);
-                    stripTwo1 = trackerChip->nfirst[icluster];
-                    stripTwoLen = trackerChip->nstrips[icluster];
-                    stripTwoChip = trackerChip->address;
-                  }
-                }
-                if (NhitLyr[lyr]==3) {
-                  if (trackerChip->nfirst[icluster] + trackerChip->nstrips[icluster] - 1 == 63 && stripTwo1 == 0 && trackerChip->address == stripTwoChip + 1) {   //Cluster continued from previous chip 
-                    strip2Lyr[lyr] = 64.0*(trackerChip->address) + 63.0-(trackerChip->nfirst[icluster] + (trackerChip->nstrips[icluster]+stripTwoLen-1.0)/2.);
-                    //									cout << "2: Chip " << stripTwoChip << " length= " << stripTwoLen << " strip " << stripTwo1 << "\n";
-                  }
-                  else {
-                    strip3Lyr[lyr] = 64.0*(trackerChip->address) + 63.0-(trackerChip->nfirst[icluster] + (trackerChip->nstrips[icluster]-1.0)/2.);
-                  }
-                }
-                //							printf("stripLyr=%f  chip=%d   First strip=%2d,  Number of strips=%2d \n",stripLyr[lyr],thisChip->Address,thisClust->firstStrip,thisClust->numStrips);
-                //--thisClust = thisClust->nextClust;
-              }
-            }
-            //--thisChip = thisChip->nextChip;
-          }
-        }
-      }
-
-      T->Fill();
-      evtCnt++;
     } // while block
   } // try block
   catch (const BitBufferException& bitBufferException) {
     cout<< bitBufferException.what() <<endl;
     bitBufferException.Print();
   }
-
-  cout << "\n" << evtCnt << " events processed.\n"; 
-  cout << "Wrote " << T->GetEntries() << " events to the ntuple to the file " << F->GetName() << "\n";
-  // T->Print();
-  F->Write();
-  F->Close();
 
   cout<< "Writing " << tree->GetEntries() << " events into output file " << ofile->GetName() <<endl;
   ofile->Write();
