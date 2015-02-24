@@ -27,6 +27,23 @@
 
 using std::cout;     using std::endl;
 
+class BeamSpot {
+public:
+  Double_t v_;
+  Double_t t_;
+  Double_t u_;
+  Double_t r_;      // beam spot sigma
+  BeamSpot(Double_t v, Double_t t, Double_t u, Double_t r=15): v_(v), t_(t), u_(u), r_(r) {}   // r = 15 mm
+};
+
+class Vertex2D {
+public:
+  Double_t x_;
+  Double_t u_;
+  Double_t r_;      // vertex sigma
+  Vertex2D(Double_t x, Double_t u, Double_t r=15): x_(x), u_(u), r_(r) {}   // r = 15 mm
+};
+
 //-------------------------------- CRay.h begin ----------------------------------
 
 class Hit2D: public TObject {
@@ -290,6 +307,18 @@ public:
    }
    Double_t T(Double_t u=266.9) const {
      return tTrack_->at(u); 
+   }
+   Double_t Vfront(Double_t u=0) const {
+     return vTrack_->itrack2D_->at(u); 
+   }
+   Double_t Tfront(Double_t u=0) const {
+     return tTrack_->itrack2D_->at(u); 
+   }
+   Double_t Vrear(Double_t u=0) const {
+     return vTrack_->otrack2D_->at(u); 
+   }
+   Double_t Trear(Double_t u=0) const {
+     return tTrack_->otrack2D_->at(u); 
    }
    Double_t Angle() {
       Double_t v_xu = 0;         // ratio of the 2D directional cosines (will be used later)
