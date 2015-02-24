@@ -2,6 +2,14 @@
 
 #include "Geometry.h"
 #include "Reco.h"
+//--------------------- #include "Reco-gap.h"
+
+// WEPL
+#include "CalTV.h"
+#include "Wepl.h"
+#include <TH2.h>
+#include <TF2.h>
+#include <TProfile2D.h>
 
 #include <TCanvas.h>
 #include <TH2.h>
@@ -23,10 +31,17 @@ TClonesArray* Reco::poolTrack2D_ = 0;
 TClonesArray* Reco::poolSuperTrack2D_ = 0;
 TClonesArray* Reco::poolSuperTrack_ = 0;
 
-void reco(const char* ifname, Int_t event1=0, Int_t event2=-1, const char* dbname="rundb-Mar2014.dat")
+void recoRun(const char* ifname
+             , Int_t event1=0, Int_t event2=-1
+             , const char* dbname="rundb-Feb2015.dat"
+             , const char* tv_calib_fname="TVcalib.txt"
+             , const char* wet_calib_fname="wet5calibExp.txt"
+             , bool debug=false
+             )
 {
-   Bool_t debug = kFALSE;
-   // Bool_t debug = kTRUE;
+   bool do_wepl = true;
+   if (!tv_calib_fname || !tv_calib_fname[0]) do_wepl = false;
+   if (!wet_calib_fname || !wet_calib_fname[0]) do_wepl = false;
 
    TFile* ifile = new TFile(ifname);
    if (!ifile) {
@@ -45,24 +60,27 @@ void reco(const char* ifname, Int_t event1=0, Int_t event2=-1, const char* dbnam
    const PCTEvent* pCTEvent = 0;
    tree->SetBranchAddress("event", &pCTEvent);
 
-   RecoEvent* recoEvent = new RecoEvent();
+   // const RecoEvent* recoEvent = 0;                 // pointer to the reco event buffer
+   RecoEvent* recoEvent = 0;                          // pointer to the reco event buffer
 
    std::string ofname;
    if (event1 != 0 || event2 != tree->GetEntries()-1) ofname = Form("%s-%d-%d.reco.root",ifname,event1,event2);
    else ofname = Form("%s.reco.root",ifname);
 
+   //cout<< "trying to open output file " << ofname.str() <<endl;
    TFile* ofile = new TFile(ofname.c_str(), "recreate");
    TTree* otree = new TTree("r", Form("Reconstruction of %s",ifname));
-   otree->SetMarkerColor(2);
+   otree->SetMarkerColor(602);
    otree->Branch("revent", "RecoEvent", &recoEvent);
 
-   RunHeader* runHeader = (RunHeader*) tree->GetUserInfo()->First();
+   RunHeader* runHeader = new RunHeader(*((RunHeader*) tree->GetUserInfo()->First()));  // use copy constructor
    cout<< "runHeader->GetRun() = " << runHeader->GetRun() <<endl;
    time_t start_time = runHeader->GetTime();
    cout<< "run start time: " << std::ctime(&start_time);
    cout<< "program version is " << runHeader->GetVersion() <<endl;
    if (runHeader->GetTimeTag()) cout<< "event time tag was written out" <<endl;
    else cout<< "event time tag was not written out" <<endl;
+   cout<< "runHeader->GetAngle() = " << runHeader->GetAngle() <<endl;
    cout<<endl;
 
    //
@@ -70,14 +88,98 @@ void reco(const char* ifname, Int_t event1=0, Int_t event2=-1, const char* dbnam
    //
    Geometry* geometry = new Geometry(runHeader->GetRun(), dbname);
 
+   //--new-- // add the angle and the phantom name to the runHeader
+   //--new-- runHeader->SetAngle(geometry->angle_);
+   //--new-- runHeader->SetPhantom(geometry->phantom_.Data());
+
+   // pass the runHeader from the input to the output tree
+   otree->GetUserInfo()->Add(runHeader);
+
    PCTSensors* pCTSensors = new PCTSensors(geometry);
 
-   Int_t tnchan = 400, vnchan = 10;
+   Double_t RbeamSpot = 0.5*(14.16 + 17.08);                         // Sep2014 beam test
+   BeamSpot beamSpotIn(35.52,-1.07,-3500, RbeamSpot);                // Sep2014 beam test
+   BeamSpot beamSpotOut(13.76,-6.96,-3500, 140.);                    // Sep2014 beam test
+   // BeamSpot beamSpotOut(13.76,-6.96,-3500, 20.);                    // Sep2014 beam test
+
+   Int_t tnchan = 400, vnchan = 20;
    Double_t tlow = -200., tup = 200., vlow = -50, vup = 50;
-   TH2F* hcal[5];
-   for (int i=0; i<5; ++i) hcal[i] = new TH2F(Form("hcal%d",i), Form("Cal response for channel %d",i), tnchan,tlow,tup, vnchan,vlow,vup);
+   TH2F* hcal_a[5];
+   for (int i=0; i<5; ++i) hcal_a[i] = new TH2F(Form("hcal%d_a",i), Form("Cal response for channel %d",i), tnchan,tlow,tup, vnchan,vlow,vup);
    TH2F* hcal_i[5];
    for (int i=0; i<5; ++i) hcal_i[i] = new TH2F(Form("hcal%d_i",i), Form("Nevents for Cal response for channel %d",i), tnchan,tlow,tup, vnchan,vlow,vup);
+
+   //
+   // WEPL reconstruction
+   //
+
+   // Book histo's 
+   TProfile2D* hcal[5];
+   for (int i=0; i<5; ++i) hcal[i] = new TProfile2D(Form("hcal%d",i), Form("Stage %d response, MeV, t-v corrected",i),60,-180,180,18,-45,45,0,80);
+   TH1F* hcalr[5];
+   for (int i=0; i<5; ++i) hcalr[i] = new TH1F(Form("hcalr%d",i), Form("Stage %d row",i),400, 0,8000);  	
+   TH1F* hcalc[5];
+   for (int i=0; i<5; ++i) hcalc[i] = new TH1F(Form("hcalc%d",i), Form("Stage %d tv-corrected",i),400, 0,100);   
+   TH1F *h7 = new TH1F("h7","Reconstructed WET",300,-10.5,289.5);
+   // h7->SetStats(kFALSE);
+   TProfile2D* hwepl= new TProfile2D("hwepl","Reconstructed WEPL",180,-6.35*30,6.35*30,45,-45,45,-10,180);	
+
+   // ADC Pedestals
+
+   //  Double_t ped[5] = {9.645, -20.484, -201.987, 62.966, -7.747};     // Celeste data
+   //-- Jul2014-- Double_t ped[5] = {121.3, -71.5, -1137, 346.2, -49.};     // New pedestals (x6, reduced data)
+   Double_t ped[5] = {431,-130,-20,224,60};     // Sept. 2014 pedestals (x6, reduced data)
+
+   //   Prepare stuff for TV correction and convertion ADC->energy(MeV)
+
+   Double_t ucal = 216.9 + 40;            // approx position for the calorimeter entrance  
+   Float_t par[5];
+   Float_t adc;
+   Float_t Estage[5];
+
+   CalF* f2cal[5]; 	                     // Calibration functions for 5 stages 
+
+   if (do_wepl) {
+      // open TV-correction parameters file
+      std::ifstream TVcalfile(tv_calib_fname);
+      if (!TVcalfile) {
+         cout<< "Could not open TV-correction file " << tv_calib_fname <<endl;
+         return;
+      }
+
+      for (int i=0; i<5; ++i) {            // read fit parameters:
+         TVcalfile >> par[0] >> par[1] >> par[2] >> par[3] >> par[4] ;
+         f2cal[i]=new CalF(i,par);        // initialize t-v calibration  function  
+      }
+      TVcalfile.close(); 
+   }
+
+   // Prepare stuff for WEPL calibration 	
+
+   Float_t wepl_par[45];
+   Float_t Wet;
+
+   if (do_wepl) {
+      // open text file with WEPL calibration data (parameters of 9 pol4 curves)   
+      std::ifstream WEPLcalfile(wet_calib_fname); 
+      if (!WEPLcalfile) {
+         cout<< "Could not find file " << wet_calib_fname <<endl;
+         return;
+      }
+
+      for (int i=0; i<45; ++i) WEPLcalfile >> wepl_par[i];
+      WEPLcalfile.close(); 
+   }
+
+   Wepl* WEPL = 0;
+   if (do_wepl) {
+      WEPL = new Wepl(wepl_par);                // initialize WEPL calibr. 
+      WEPL->SetEthresholds(1,.99,1,1,1);        // Set all stage thresholds to 1 MeV
+   }
+
+   //----------------- end of WEPL reconstruction stuff -----------------
+
+   Int_t nevents_with_tracks = 0;
 
    if (event2 < event1) event2 = tree->GetEntries()-1;
 
@@ -85,7 +187,7 @@ void reco(const char* ifname, Int_t event1=0, Int_t event2=-1, const char* dbnam
    {
       if (tree->LoadTree(ientry) < 0) {
          cout<< "Could not load event " << ientry <<endl;
-         return;
+         break;
       }
       tree->GetEntry(ientry);
 
@@ -95,67 +197,88 @@ void reco(const char* ifname, Int_t event1=0, Int_t event2=-1, const char* dbnam
           || (ientry%100000 == 0)
       ) cout<< "---> processing entry " << ientry <<endl; 
 
-      Reco reco(geometry, pCTSensors, pCTEvent, ientry, debug);
-      //cout<< "------------------------ generate 2D tracks ---" <<endl;
-      reco.GenerateTracks2D();
-      //cout<< "------------------------ generate 2D SuperTracks ---" <<endl;
-      reco.GenerateSuperTracks2D();
-      //cout<< "------------------------ generate super tracks ---" <<endl;
-      reco.GenerateSuperTracks();
+      //--new-- Reco reco(geometry, &beamSpot, pCTSensors, pCTEvent, ientry, debug);
+      Reco reco(geometry, pCTSensors, &beamSpotIn, &beamSpotOut, pCTEvent, ientry, debug);
+      reco.Tracking();
 
-      // cout<< "recoEvent: superTracks_.size() = " << reco.superTracks_.size() <<endl;
-
-      // for (std::list<const SuperTrack*>::const_iterator it=reco.superTracks_.begin(); it!=reco.superTracks_.end(); ++it) {
-      //    cout<< std::distance<std::list<const SuperTrack*>::const_iterator>(reco.superTracks_.begin(), it) << " angle = " << (*it)->angle <<endl;
-      //    // const SuperTrack* superTrack = *it;
-      //    // cout<< std::distance<std::list<const SuperTrack*>::const_iterator>(reco.superTracks_.begin(), it) << " angle = " << superTrack->angle <<endl;
-      // }
-
+      if (debug) cout<< "call recoEvent->Extract(reco)" <<endl;
       recoEvent->Extract(reco);
+      if (recoEvent->track->GetLast()+1 > 0) ++nevents_with_tracks;
 
-      // for (int itrack=0; itrack<recoEvent->track->GetLast()+1; ++itrack) {
-      //    const SuperTrack* superTrack = (const SuperTrack*) recoEvent->track->At(itrack);
-      //    cout<< itrack << " angle = " << superTrack->angle <<endl;
-      //    Double_t v = 0, t = 0;
-      //    superTrack->at(266.9, v, t);
-      //    cout<< "v = " << v << " t = " << t <<endl;
-      // }
+      recoEvent->wepl = -2000;
+      if (do_wepl) {
+         //
+         //    calculate WEPL and assign to the recoEvent->wepl
+         //
+         if (debug) cout<< "calculate WEPL: recoEvent->track->GetLast()+1 = " << recoEvent->track->GetLast()+1 <<endl;
+         if (recoEvent->track->GetLast()+1 > 0)
+         {
+            const SuperTrack* superTrack = (const SuperTrack*) recoEvent->track->At(0);   // take the first reconstructed track
+
+            for (int ical=0; ical<5; ++ical) {
+               adc = recoEvent->a[ical];
+               adc = adc - ped[ical]; 
+               //	if (adc < 100) adc = 0;
+               hcalr[ical]->Fill(adc);  
+
+               // Apply TV correction and convert ADC channel to E in MeV
+               if (debug) cout<< "Apply TV correction and convert ADC channel to E in MeV" <<endl;
+               Estage[ical]=f2cal[ical]->CalTVf(superTrack->T(ucal),superTrack->V(ucal),adc);   
+
+               // Fill TV-corr control histo's
+               hcalc[ical]->Fill(Estage[ical]);          
+               hcal[ical]->Fill(superTrack->T(ucal), superTrack->V(ucal),Estage[ical]);
+            }
+
+            // Get Wet=WEPL from Estage
+            if (debug) cout<< "Get Wet=WEPL from Estage" <<endl;
+            Wet=WEPL->EtoWEPL(Estage);
+            if (debug) cout<< "Wet = " << Wet <<endl;
+
+            //-- if(Wet>999. || Wet<-999.) continue;
+            //--new-- recoEvent->SetWEPL(Wet);
+            if (debug) cout<< "assign Wet to recoEvent->wepl" <<endl;
+            if(Wet>-999. && Wet<999.) recoEvent->wepl = Wet;
+            if (debug) cout<< "   done" <<endl;
+
+            // Fill WEPL-calib control histo's
+            h7->Fill(Wet);  
+            hwepl->Fill(superTrack->T(0), superTrack->V(0),Wet);
+            if (debug) cout<< "finished with WEPL" <<endl;
+         }
+      }
+
+      if (debug) cout<< "otree->Fill()" <<endl;
       otree->Fill();
+      if (debug) cout<< "   done otree->Fill()" <<endl;
 
       for (int itrack=0; itrack<recoEvent->track->GetLast()+1; ++itrack) {
          const SuperTrack* superTrack = (const SuperTrack*) recoEvent->track->At(itrack);
          for (int ical=0; ical<5; ++ical) {
             Float_t adc = recoEvent->a[ical];
             if (adc < 100) adc = 0;
-            // hcal[ical]->Fill(superTrack->tcal, superTrack->vcal, adc);
-            // hcal_i[ical]->Fill(superTrack->tcal, superTrack->vcal);
-            hcal[ical]->Fill(superTrack->T(-128.), superTrack->V(-128.), adc);
+            hcal_a[ical]->Fill(superTrack->T(-128.), superTrack->V(-128.), adc);
             hcal_i[ical]->Fill(superTrack->T(-128.), superTrack->V(-128.));
          }
       }
-
-      // //----- debug -----
-      // for (int ihit=0; ihit<Sensor::poolSensorHit_->GetLast()+1; ++ihit) {
-      //    const SensorHit* hit = (const SensorHit*) Sensor::poolSensorHit_->At(ihit);
-      //    cout<< ihit << "\t" << *hit <<endl;
-      // }
    }
 
-   //new TCanvas;
-   //hcal[0]->DrawCopy("colz");
-
-   for (int ical=0; ical<5; ++ical) hcal[ical]->Divide(hcal_i[ical]);
+   for (int ical=0; ical<5; ++ical) hcal_a[ical]->Divide(hcal_i[ical]);
 
    new TCanvas;
-   hcal[0]->DrawCopy("colz");
+   hcal_a[0]->DrawCopy("colz");
 
-   //-- if (otree->GetCurrentFile()) cout<< "write " << otree->GetEntries() << " events into output file " << otree->GetCurrentFile()->GetName() <<endl;
-   //-- else cout<< "write " << otree->GetEntries() << " events into output file " << ofile->GetName() <<endl;
-   cout<< "write " << otree->GetEntries() << " events into output file " << ofile->GetName() <<endl;
+   cout<< "Reconstructed tracks in " << nevents_with_tracks << " events" <<endl;
+
+   if (otree->GetCurrentFile()) cout<< "write " << otree->GetEntries() << " events into output file " << otree->GetCurrentFile()->GetName() <<endl;
+   else cout<< "write " << otree->GetEntries() << " events into output file " << ofile->GetName() <<endl;
    ofile->Write();
 }
 
-void recoEvent(Int_t event=100128, TTree* tree=0, bool debug=true, const char* dbname="rundb-Mar2014.dat")
+void recoEvent(Int_t event, TTree* tree=0
+               , bool debug=true
+               , const char* dbname="rundb-Feb2015.dat"
+              )
 {
    if (!tree) tree = (TTree*) gDirectory->Get("t");
    if (!tree) {
@@ -170,6 +293,7 @@ void recoEvent(Int_t event=100128, TTree* tree=0, bool debug=true, const char* d
    cout<< "program version is " << runHeader->GetVersion() <<endl;
    if (runHeader->GetTimeTag()) cout<< "event time tag was written out" <<endl;
    else cout<< "event time tag was not written out" <<endl;
+   cout<< "runHeader->GetAngle() = " << runHeader->GetAngle() <<endl;
    cout<<endl;
 
    //
@@ -182,7 +306,12 @@ void recoEvent(Int_t event=100128, TTree* tree=0, bool debug=true, const char* d
 
    RecoEvent* recoEvent = new RecoEvent();
 
+   //--new-- PCTSensors* pCTSensors = new PCTSensors(geometry, debug);
    PCTSensors* pCTSensors = new PCTSensors(geometry);
+
+   Double_t RbeamSpot = 0.5*(14.16 + 17.08);                         // Sep2014 beam test
+   BeamSpot beamSpotIn(35.52,-1.07,-3500, RbeamSpot);                // Sep2014 beam test
+   BeamSpot beamSpotOut(13.76,-6.96,-3500, 140.);                    // Sep2014 beam test
 
    if (tree->LoadTree(event) < 0) {
       cout<< "Could not load event " << event <<endl;
@@ -190,27 +319,12 @@ void recoEvent(Int_t event=100128, TTree* tree=0, bool debug=true, const char* d
    }
    tree->GetEntry(event);
 
-   Reco reco(geometry, pCTSensors, pCTEvent, event, debug);
-   cout<< "------------------------ generate 2D tracks ---" <<endl;
-   reco.GenerateTracks2D();
-   cout<< "------------------------ generate 2D SuperTracks ---" <<endl;
-   reco.GenerateSuperTracks2D();
-   cout<< "------------------------ generate super tracks ---" <<endl;
-   reco.GenerateSuperTracks();
+   Reco reco(geometry, pCTSensors, &beamSpotIn, &beamSpotOut, pCTEvent, event, debug);
+   reco.Tracking();
 
-   // cout<< "------------------------ apply filter for distance at u=0 ---" <<endl;
-   // Double_t r = 10.; // mm
-   // reco.FilterDistanceU0(r);
-
-   // cout<< "recoEvent: superTracks_.size() = " << reco.superTracks_.size() <<endl;
-
-   for (std::list<const SuperTrack*>::const_iterator it=reco.superTracks_.begin(); it!=reco.superTracks_.end(); ++it) {
-      cout<< std::distance<std::list<const SuperTrack*>::const_iterator>(reco.superTracks_.begin(), it) << " angle = " << (*it)->angle <<endl;
-      // const SuperTrack* superTrack = *it;
-      // cout<< std::distance<std::list<const SuperTrack*>::const_iterator>(reco.superTracks_.begin(), it) << " angle = " << superTrack->angle <<endl;
-   }
-
+   cout<< "--> call Extract" <<endl;
    recoEvent->Extract(reco);
+   cout<< "--> recoEvent->track->GetLast()+1 = " << recoEvent->track->GetLast()+1 <<endl;
 
    for (int itrack=0; itrack<recoEvent->track->GetLast()+1; ++itrack) {
       const SuperTrack* superTrack = (const SuperTrack*) recoEvent->track->At(itrack);
@@ -218,11 +332,27 @@ void recoEvent(Int_t event=100128, TTree* tree=0, bool debug=true, const char* d
       Double_t v = 0, t = 0;
       superTrack->at(266.9, v, t);
       cout<< "v = " << v << " t = " << t <<endl;
+      //--new-- // cout<< *superTrack <<endl;
+      //--new-- cout<< itrack << "\tangle = " << superTrack->angle << " distance = " << superTrack->Distance() <<endl;
+      //--new-- cout<< "\tsuperTrack->itrack_->vTrack_->hit1_ = " << *superTrack->itrack_->vTrack_->hit1_ << "\tsuperTrack->itrack_->vTrack_->hit2_ = " << *superTrack->itrack_->vTrack_->hit2_ <<endl;
+      //--new-- cout<< "\tsuperTrack->itrack_->tTrack_->hit1_ = " << *superTrack->itrack_->tTrack_->hit1_ << "\tsuperTrack->itrack_->tTrack_->hit2_ = " << *superTrack->itrack_->tTrack_->hit2_ <<endl;
+      //--new-- cout<< "\tsuperTrack->otrack_->vTrack_->hit1_ = " << *superTrack->otrack_->vTrack_->hit1_ << "\tsuperTrack->otrack_->vTrack_->hit2_ = " << *superTrack->otrack_->vTrack_->hit2_ <<endl;
+      //--new-- cout<< "\tsuperTrack->otrack_->tTrack_->hit1_ = " << *superTrack->otrack_->tTrack_->hit1_ << "\tsuperTrack->otrack_->tTrack_->hit2_ = " << *superTrack->otrack_->tTrack_->hit2_ <<endl;
    }
    for (int ichan=0; ichan<5; ++ichan) cout<< "a[" << ichan << "] = " << recoEvent->a[ichan] << " "; cout<<endl;
+
+   // cout<< "All hits from the Sensor::poolSensorHit_" <<endl;
+   // for (int ihit=0; ihit<Sensor::poolSensorHit_->GetLast()+1; ++ihit) {
+   //    const SensorHit* hit = (const SensorHit*) Sensor::poolSensorHit_->At(ihit);
+   //    cout<< ihit << "\t" << *hit <<endl;
+   // }
 }
 
-Int_t display(Int_t event, TTree* tree=0, const char* dbname="rundb-Mar2014.dat", const char* wname="event_display")
+//
+// NB: display does not use Reco
+//
+
+Int_t display(Int_t event, TTree* tree=0, const char* dbname="rundb-Feb2015.dat", const char* wname="event_display")
 {
    if (!tree) tree = (TTree*) gDirectory->Get("t");
    if (!tree) {
@@ -237,12 +367,15 @@ Int_t display(Int_t event, TTree* tree=0, const char* dbname="rundb-Mar2014.dat"
    cout<< "program version is " << runHeader->GetVersion() <<endl;
    if (runHeader->GetTimeTag()) cout<< "event time tag was written out" <<endl;
    else cout<< "event time tag was not written out" <<endl;
+   cout<< "runHeader->GetAngle() = " << runHeader->GetAngle() <<endl;
    cout<<endl;
 
    //
    // read the database
    //
    Geometry* geometry = new Geometry(runHeader->GetRun(), dbname);
+
+   //BeamSpot beamSpot(0,0,-3500);    // the display does not use Reco (and the BeamSpot)
 
    PCTSensors pCTSensors(geometry);
 
@@ -379,7 +512,7 @@ Int_t display(Int_t event, TTree* tree=0, const char* dbname="rundb-Mar2014.dat"
    return event;
 }
 
-void eloop(Int_t evtNo=0, TTree* tree=0, const char* wname="event_display")
+void eloop(Int_t evtNo=0, TTree* tree=0, const char* dbname="rundb-Feb2015.dat", const char* wname="event_display")
 {
    if (tree == 0) {
       tree = (TTree*) gDirectory->Get("t");
@@ -388,14 +521,15 @@ void eloop(Int_t evtNo=0, TTree* tree=0, const char* wname="event_display")
          return;
       }
 
-      RunHeader* runHeader = (RunHeader*) tree->GetUserInfo()->First();
-      cout<< "runHeader->GetRun() = " << runHeader->GetRun() <<endl;
-      time_t start_time = runHeader->GetTime();
-      cout<< "run start time: " << std::ctime(&start_time);
-      cout<< "program version is " << runHeader->GetVersion() <<endl;
-      if (runHeader->GetTimeTag()) cout<< "event time tag was written out" <<endl;
-      else cout<< "event time tag was not written out" <<endl;
-      cout<<endl;
+      // RunHeader* runHeader = (RunHeader*) tree->GetUserInfo()->First();
+      // cout<< "runHeader->GetRun() = " << runHeader->GetRun() <<endl;
+      // time_t start_time = runHeader->GetTime();
+      // cout<< "run start time: " << std::ctime(&start_time);
+      // cout<< "program version is " << runHeader->GetVersion() <<endl;
+      // if (runHeader->GetTimeTag()) cout<< "event time tag was written out" <<endl;
+      // else cout<< "event time tag was not written out" <<endl;
+      // cout<< "runHeader.GetAngle() = " << runHeader.GetAngle() <<endl;
+      // cout<<endl;
    }
 
    TTimer timer("gSystem->ProcessEvents();",50,kFALSE);  //-- process mouse events every 50 ms
@@ -441,7 +575,7 @@ void eloop(Int_t evtNo=0, TTree* tree=0, const char* wname="event_display")
       // 0) <CR>
       if (line.size() == 0)
       {
-         event_flag = display(evtNo,tree,wname);
+         event_flag = display(evtNo,tree,dbname,wname);
          if (event_flag >= 0) last_event_plot = event_flag;
          ++evtNo;
          continue;
@@ -452,7 +586,7 @@ void eloop(Int_t evtNo=0, TTree* tree=0, const char* wname="event_display")
       Int_t number = -1;
       if (ss >> number && ss.eof()) {
          evtNo = number;
-         event_flag = display(evtNo,tree,wname);
+         event_flag = display(evtNo,tree,dbname,wname);
          if (event_flag >= 0) last_event_plot = event_flag;
          ++evtNo;
          continue;
@@ -466,7 +600,7 @@ void eloop(Int_t evtNo=0, TTree* tree=0, const char* wname="event_display")
          switch (toupper(line[0])) {
             case '-':
                evtNo -= 2;          // previous event
-               event_flag = display(evtNo,tree,wname);
+               event_flag = display(evtNo,tree,dbname,wname);
                if (event_flag >= 0) last_event_plot = event_flag;
                ++evtNo;
                break;
