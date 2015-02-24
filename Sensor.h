@@ -84,6 +84,7 @@ public:
    }
    virtual void Set_strip1_dir_info(Double_t u, Double_t strip1, Double_t dir, Int_t layer, Int_t sensor) = 0;
    Double_t CenterOfGravity(Double_t strip) const {return strip1_ + dir_*strip*pitch_;}
+   Double_t Strip(Double_t pos) const {return (pos - strip1_)/(dir_*pitch_);}
    Double_t StripPosition(Int_t chip, Int_t nfirst) {
       // input data come directly from the readout:
       // chip:    0..12
@@ -147,6 +148,17 @@ public:
    }
 };
 
+class Gap {
+public:
+   Double_t width_;
+   Double_t v_layer_offset_wrt_t_;
+   Double_t tgap_[4][3];                  // middle of each of three t-gaps in the t-sensors (all gaps are t-gaps)
+   Double_t vgap_[4][3];                  // middle of each of three t-gaps in the v-sensors
+   Gap(): width_(1.)                      // let gap width = 1 mm
+          , v_layer_offset_wrt_t_(1.9)    // let offset of the v-layer wrt to the t-layer is 1.9 mm
+   {}
+};
+
 class PCTSensors {
    //
    // sensor 0: 0..383
@@ -172,11 +184,13 @@ class PCTSensors {
    //
 public:
    const Geometry* geometry_;
+   Bool_t debug_;
    VSensor vSensor[4][2];     // [layer][sensor]
    TSensor tSensor[4][4];     // [layer][sensor]
    // hits
    std::vector<SensorHit*> v_hits[4];       // v_hits for all 4 layers
    std::vector<SensorHit*> t_hits[4];       // t_hits for all 4 layers
+   Gap gap_;
 
    void GetHits() {
       for (int ilayer=0; ilayer<4; ++ilayer) for (int isensor=0; isensor<2; ++isensor) vSensor[ilayer][isensor].GetHits();
@@ -214,7 +228,7 @@ public:
          t_hits[ilayer].clear();
       }
    }
-   PCTSensors(const Geometry* geometry): geometry_(geometry)
+   PCTSensors(const Geometry* geometry, Bool_t debug=kFALSE): geometry_(geometry), debug_(debug)
    {
       //cout<< "PCTSensors::PCTSensors" <<endl;
       //Sensor::CreateHitPool();
@@ -343,6 +357,18 @@ public:
             tSensor[ilayer][isensor].Set_strip1_dir_info(geometry_->ut_[ilayer], first_strip, dir, ilayer, isensor);
          }
       }
+
+      if (debug_) cout<< "constructor PCTSensors: calculate gaps: gap_.v_layer_offset_wrt_t_ = " << gap_.v_layer_offset_wrt_t_ <<endl;
+      for (int ilayer=0; ilayer<4; ++ilayer) for (int isensor=0; isensor<3; ++isensor) {  //NB: loop over 3 sensors
+         Double_t strip_last = tSensor[ilayer][isensor].strip1_ + tSensor[ilayer][isensor].dir_*383*geometry->pitch_;
+         Double_t strip_first = tSensor[ilayer][isensor+1].strip1_;
+         gap_.tgap_[ilayer][isensor] = 0.5*(strip_last+strip_first);
+         gap_.vgap_[ilayer][isensor] = gap_.tgap_[ilayer][isensor] - tSensor[ilayer][isensor].dir_*gap_.v_layer_offset_wrt_t_;
+         if (debug_) cout<< "strip_last = " << strip_last << " next sensor strip_first = " << strip_first
+            << "\t gap_.tgap_[" << ilayer << "][" << isensor << "] = " << gap_.tgap_[ilayer][isensor] 
+            << "\t gap_.vgap_[" << ilayer << "][" << isensor << "] = " << gap_.vgap_[ilayer][isensor] 
+         <<endl;
+      }
    }
    void AddCluster(Int_t FPGA, Int_t chip, Int_t nfirst, Int_t nstrips) {
       int sensor;
@@ -428,6 +454,24 @@ public:
             //cout<< "added chip " << chip << " nfirst " << nfirst << " nstrips " << nstrips << " to tSensor[" << ilayer<< "][" << sensor << "]" <<endl;
             break;
       }
+   }
+   Double_t VStrip(Double_t pos, Int_t layer) const {
+      std::map<Double_t,Double_t> distanceStrip;
+      for (int isensor=0; isensor<2; ++isensor) {                 // two sensors in the layer
+         Double_t strip = vSensor[layer][isensor].Strip(pos);
+         distanceStrip[TMath::Abs(strip - 0)] = strip;
+         distanceStrip[TMath::Abs(strip - 367)] = strip;
+      }
+      return distanceStrip.begin()->second;
+   }
+   Double_t TStrip(Double_t pos, Int_t layer) const {
+      std::map<Double_t,Double_t> distanceStrip;
+      for (int isensor=0; isensor<4; ++isensor) {                 // four sensors in the layer
+         Double_t strip = tSensor[layer][isensor].Strip(pos);
+         distanceStrip[TMath::Abs(strip - 0)] = strip;
+         distanceStrip[TMath::Abs(strip - 367)] = strip;
+      }
+      return distanceStrip.begin()->second;
    }
 };
 
