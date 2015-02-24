@@ -49,6 +49,9 @@ struct OutputFiles {
       std::remove(wname.str().c_str());
    }
    void open() {
+      //
+      //    open file in out mode, close and open again in out/in mode
+      //
       for (int ilayer=0; ilayer<4; ++ilayer) {
          vname[ilayer] << "temporary_file_v" << ilayer << "file-" << std::setfill('0') << std::setw(3) << angle << ".dat";
          tname[ilayer] << "temporary_file_t" << ilayer << "file-" << std::setfill('0') << std::setw(3) << angle << ".dat";
@@ -66,7 +69,7 @@ struct OutputFiles {
          ufile[ilayer]->close();
          ufile[ilayer]->open(uname[ilayer].str().c_str(), std::ios::binary | std::ios::in | std::ios::out);
       }
-      wname << "temporary_file_wfile.dat";
+      wname << "temporary_file_wfile-" << std::setfill('0') << std::setw(3) << angle << ".dat";
       wfile = new fstream(wname.str().c_str(), std::ios::binary | std::ios::out);
       wfile->close();
       wfile->open(wname.str().c_str(), std::ios::binary | std::ios::in | std::ios::out);
@@ -81,7 +84,7 @@ struct OutputFiles {
    }
 };
 
-void writeReco(Int_t event1=0, Int_t event2=-1, TTree* tree=0, OutputFiles* outputFiles=0, const char* dbname="rundb-Sep2014.dat", bool plot=false)
+void writeReco(Int_t event1=0, Int_t event2=-1, TTree* tree=0, OutputFiles* outputFiles=0, const char* dbname="rundb-Feb2015.dat", bool plot=false)
 {
    Bool_t debug = kFALSE;
    if (debug) cout<< "debug in on" <<endl;
@@ -99,6 +102,11 @@ void writeReco(Int_t event1=0, Int_t event2=-1, TTree* tree=0, OutputFiles* outp
    // }
 
    // use runHeader to get the run number for the database search
+   TList* info = tree->GetUserInfo();
+   if (!info) {
+      cout<< "Could not find user info" <<endl;
+      return;
+   }
    RunHeader* runHeader = (RunHeader*) tree->GetUserInfo()->First();
    cout<< "runHeader->GetRun() = " << runHeader->GetRun() <<endl;
    time_t start_time = runHeader->GetTime();
@@ -106,6 +114,7 @@ void writeReco(Int_t event1=0, Int_t event2=-1, TTree* tree=0, OutputFiles* outp
    cout<< "program version is " << runHeader->GetVersion() <<endl;
    if (runHeader->GetTimeTag()) cout<< "event time tag was written out" <<endl;
    else cout<< "event time tag was not written out" <<endl;
+   cout<< "runHeader->GetAngle() = " << runHeader->GetAngle() <<endl;
    cout<<endl;
 
    // Geometry
@@ -139,7 +148,8 @@ void writeReco(Int_t event1=0, Int_t event2=-1, TTree* tree=0, OutputFiles* outp
 
    // ADC Pedestals
    //  Double_t ped[5] = {9.645, -20.484, -201.987, 62.966, -7.747};     // Celeste data
-   Double_t ped[5] = {121.3, -71.5, -1137, 346.2, -49.};     // New pedestals (x6, reduced data)
+   //----------------------------------------------------------------Double_t ped[5] = {121.3, -71.5, -1137, 346.2, -49.};     // New pedestals (x6, reduced data)
+   Double_t ped[5] = {431,-130,-20,224,60};     // Sept. 2014 pedestals (x6, reduced data)
    //   Prepare stuff for TV correction and convertion ADC->energy(MeV)
    Double_t ucal = 216.9 + 40; // approx position for the calorimeter entrance  
    Float_t par[5]; Float_t adc; Float_t Estage[5];
@@ -165,6 +175,8 @@ void writeReco(Int_t event1=0, Int_t event2=-1, TTree* tree=0, OutputFiles* outp
    cout<< "Events to process: " << event2 - event1 + 1 << " out of total events " << tree->GetEntries() <<endl;
 
    EventOutput eventOutput;
+
+   //-- std::ofstream fwepl("wepl.dat");
 
    for (int ientry=event1; ientry<=event2; ++ientry)
    {
@@ -199,12 +211,15 @@ void writeReco(Int_t event1=0, Int_t event2=-1, TTree* tree=0, OutputFiles* outp
          }
          // Get Wet=WEPL from Estage
          Wet=WEPL->EtoWEPL(Estage);
+         //--------------------------Wet = recoEvent->wepl;
          if(Wet>999. || Wet<-999.) continue;
          // Fill WEPL-calib control histo's
          h7->Fill(Wet);  
          hwepl->Fill(superTrack->T(0), superTrack->V(0),Wet);
 
          // write output files
+
+         //-- fwepl << Wet << "\n";
 
          ++outputFiles->nevents;
          eventOutput.good = kTRUE;
@@ -242,7 +257,7 @@ void writeReco(Int_t event1=0, Int_t event2=-1, TTree* tree=0, OutputFiles* outp
    cout<< "Wrote " << outputFiles->nevents << " events into temporary files" <<endl;
 }
 
-void writeReco(const char* ifname, Int_t event1=0, Int_t event2=-1, const char* dbname="rundb-Sep2014.dat")
+void writeReco(const char* ifname, Int_t event1=0, Int_t event2=-1, const char* dbname="rundb-Feb2015.dat")
 {
    Bool_t debug = kFALSE;
    if (debug) cout<< "debug in on" <<endl;
