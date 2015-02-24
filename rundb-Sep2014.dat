@@ -14,19 +14,100 @@ run 8 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-
 run 11 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom none
 run 12 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom none
 
-run 15 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom none
-run 16 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom none
-run 17 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom none
-run 18 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom none
+run 22 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom none
 
 run 25 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom pyramid nbricks 1
 run 26 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom pyramid nbricks 2
 run 27 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom pyramid nbricks 4
 run 28 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom pyramid nbricks 4
 
-run 42 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom none
-run 43 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom none
-run 44 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom none
-run 45 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom none
-run 46 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom none
-run 47 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom none
+run 32 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 0
+run 33 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 4
+run 34 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 8
+run 35 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 12
+run 36 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 16
+run 37 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 20
+run 38 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 24
+run 39 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 28
+run 40 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 32
+run 41 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 36
+run 42 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 40
+run 43 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 44
+run 44 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 48
+run 45 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 52
+run 46 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 56
+run 47 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 60
+run 48 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 64
+run 49 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 68
+run 50 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 72
+run 51 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 76
+run 52 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 80
+run 53 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 84
+run 54 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 88
+run 55 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 92
+run 56 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 96
+run 57 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 100
+run 58 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 104
+run 59 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 108
+run 60 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 112
+run 61 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 116
+run 62 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 120
+run 63 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 124
+run 64 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 128
+run 65 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 132
+run 66 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 136
+run 67 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 140
+run 68 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 144
+run 69 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 148
+run 70 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 152
+run 71 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 156
+run 72 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 160
+run 73 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 164
+run 74 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 168
+run 75 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 172
+run 76 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 176
+run 77 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 180
+run 78 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 184
+run 79 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 188
+run 80 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 192
+run 81 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 196
+run 82 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 200
+run 83 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 204
+run 84 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 208
+run 85 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 212
+run 86 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 216
+run 87 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 220
+run 88 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 224
+run 89 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 228
+run 90 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 232
+run 91 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 236
+run 92 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 240
+run 93 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 244
+run 94 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 248
+run 95 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 252
+run 96 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 256
+run 97 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 260
+run 98 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 264
+run 99 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 268
+run 100 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 272
+run 101 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 276
+run 102 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 280
+run 103 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 284
+run 104 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 288
+run 105 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 292
+run 106 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 296
+run 107 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 300
+run 108 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 304
+run 109 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 308
+run 110 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 312
+run 111 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 316
+run 112 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 320
+run 113 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 324
+run 114 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 328
+run 115 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 332
+run 116 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 336
+run 117 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 340
+run 118 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 344
+run 119 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 348
+run 120 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 352
+run 121 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom sensitom angle 356
