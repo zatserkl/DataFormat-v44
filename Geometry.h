@@ -44,7 +44,7 @@ public:
       //-- assert(readdb(the_run, dbname));
       //--beamtest-- if (!readdb(the_run, dbname)) readdb(0,dbname);     // if run was not found in the database use settings for the run 0
       if (!readdb(the_run, dbname)) {
-        cout<< "***Error Geometry::Geometry: Run " << the_run << " was not found in the database" <<endl;
+        cout<< "Run " << the_run << " was not found in the database" <<endl;
         exit(0);
       }
 
@@ -65,14 +65,25 @@ public:
       //--March--    {-43.7193, -43.716},
       //--March--    {-43.5855, -43.5865}             // these are actually from T6
       //--March-- };
+      // Double_t firstStripV[7][2] = {		// Distance from the alignment pin to the first strip
+      //    {-999., -999.},                  // Board V0 doesn't exist, we manufactured 6 boards
+      //    {-43.727, -43.687},              // Board V1
+      //    {-43.682, -43.681},              // Board V2
+      //    {-43.702, -43.713},              // Board V3
+      //    {-43.7193, -43.716},	          // Board V4
+      //    {-43.7193, -43.716},             // No survey yet for Board V5
+      //    {-43.686, -43.687}               // Board V6, including a typo correction June 9 that changed the numbers by 0.1 mm
+      // };
+
+      // Robert Johnson, 10/2/2014
       Double_t firstStripV[7][2] = {		// Distance from the alignment pin to the first strip
          {-999., -999.},                  // Board V0 doesn't exist, we manufactured 6 boards
          {-43.727, -43.687},              // Board V1
-         {-43.682, -43.681},              // Board V2
-         {-43.702, -43.713},              // Board V3
-         {-43.7193, -43.716},	          // Board V4
+         {-43.7033, -43.7185},              // Board V2
+         {-43.8453, -43.7855},              // Board V3
+         {-43.5806, -43.6415},	          // Board V4
          {-43.7193, -43.716},             // No survey yet for Board V5
-         {-43.686, -43.687}               // Board V6, including a typo correction June 9 that changed the numbers by 0.1 mm
+         {-43.6603, -43.6515}               // Board V6, including a typo correction June 9 that changed the numbers by 0.1 mm
       };
 
       for (int ilayer=0; ilayer<4; ++ilayer) vPin_[ilayer] = vPin[ilayer];
@@ -99,7 +110,8 @@ public:
       //
       // T-boards
       //
-      Double_t tPin[4] = {215.24, 211.25, -211.25, -215.24};   // T coordinate of alignment pin per layer
+      //-- Double_t tPin[4] = {215.24, 211.25, -211.25, -215.24};   // T coordinate of alignment pin per layer
+      Double_t tPin[4] = {215.3125, 211.3595, -211.1630, -215.1940};   // T coordinate of alignment pin per layer //NB: Robert Johnson 10/2/2014
       //Double_t tDir[4] = {-1.0, -1.0, 1.0, 1.0};               // T direction of increasing strip number per layer
 
       //Int_t tBoard[4] = {5, 4, 1, 3};     // T-layer to physical T board translation. This will change if spares are swapped in!
@@ -172,7 +184,8 @@ public:
       const std::string phantom_wire_str = "wire";
       const std::string phantom_catphan_str = "catphan";
       const std::string phantom_sensitom_str = "sensitom";
-      const std::string phantom_RodCenter_str = "RodCenter";
+      const std::string phantom_CIRSFordInf_str = "CIRSFordInf";
+      const std::string phantom_CIRSFordSup_str = "CIRSFordSup";
 
       std::ifstream file(dbname);
       if (!file) {
@@ -185,12 +198,12 @@ public:
       bool found = false;
       std::string line;
       std::string word;
-
       while (std::getline(file, line))
       {
+         //cout<< "line = " << line <<endl;
          if (line.size() == 0) continue;
 
-         std::istringstream ss(line);   // create a stringstream object for each loop iteration to avoid blocking by eof from the last read
+         std::istringstream ss(line);          // create a new instance of the stringstream for each iteration to avoid problem with eof
 
          // read the first word
          ss >> word;
@@ -207,14 +220,15 @@ public:
       }
 
       if (!found) {
-         cout<< "***Error Geometry::readdb: Run " << the_run << " was not found in the database" <<endl;
+         cout<< "Run " << the_run << " was not found in the database" <<endl;
          return false;
       }
 
       // found line for the_run
+      cout<< line <<endl;
 
-      std::istringstream ss(line);    // create a new stringstream
-      ss >> word >> run;              // remove from the input stream already read values
+      std::istringstream ss(line);
+      ss >> word >> run;              // remove from the stream already read items
 
       // u coordinates
       ss >> word;
@@ -280,7 +294,8 @@ public:
          cout<< "phantom: " << phantom << " nbricks = " << nbricks <<endl;
       }
       else if (phantom == phantom_water_str) {
-         cout<< "phantom == " << phantom_water_str <<endl;
+         ss >> word >> angle_;
+         cout<< "phantom == " << phantom_water_str << " angle_ = " << angle_ <<endl;
       }
       else if (phantom == phantom_wire_str) {
          cout<< "phantom == " << phantom_wire_str <<endl;
@@ -293,9 +308,13 @@ public:
          ss >> word >> angle_;
          cout<< "phantom == " << phantom_sensitom_str << " angle_ = " << angle_ <<endl;
       }
-      else if (phantom == phantom_RodCenter_str) {
+      else if (phantom == phantom_CIRSFordInf_str) {
          ss >> word >> angle_;
-         cout<< "phantom == " << phantom_RodCenter_str << " angle_ = " << angle_ <<endl;
+         cout<< "phantom == " << phantom_CIRSFordInf_str << " angle_ = " << angle_ <<endl;
+      }
+      else if (phantom == phantom_CIRSFordSup_str) {
+         ss >> word >> angle_;
+         cout<< "phantom == " << phantom_CIRSFordSup_str << " angle_ = " << angle_ <<endl;
       }
       else if (phantom == none_str) {
          cout<< "phantom == " << none_str <<endl;
