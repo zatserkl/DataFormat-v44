@@ -1,6 +1,7 @@
 // Andriy Zatserklyaniy, April 17, 2014
 
 #include "Reco.h"
+#include "DataFormat.h"
 
 #include <TCanvas.h>
 #include <TH2.h>
@@ -16,6 +17,17 @@ void plotReco(Int_t event1=0, Int_t event2=-1, TTree* tree=0)
       cout<< "Could not find tree r" <<endl;
       return;
    }
+
+   // use runHeader to get the run number
+   RunHeader* runHeader = (RunHeader*) tree->GetUserInfo()->First();
+   cout<< "runHeader->GetRun() = " << runHeader->GetRun() <<endl;
+   time_t start_time = runHeader->GetTime();
+   cout<< "run start time: " << std::ctime(&start_time);
+   cout<< "program version is " << runHeader->GetVersion() <<endl;
+   if (runHeader->GetTimeTag()) cout<< "event time tag was written out" <<endl;
+   else cout<< "event time tag was not written out" <<endl;
+   cout<< "runHeader->GetAngle() = " << runHeader->GetAngle() <<endl;
+   cout<<endl;
 
    Double_t ped[5] = {9.645, -20.484, -201.987, 62.966, -7.747};     // Celeste data
    Double_t ucal = 216.9 + 40;                                       // approx position for the calorimeter entrance for runs >= 51
@@ -52,7 +64,8 @@ void plotReco(Int_t event1=0, Int_t event2=-1, TTree* tree=0)
          if (superTrack->angle > 0.07) continue;      // apply cut on the angle between the tracks in the supertrack
          for (int ical=0; ical<5; ++ical) {
             //--old-- Float_t adc = recoEvent->a[ical];
-            Float_t adc = recoEvent->SampleSum(ical, 1, 2, ped[ical]);
+            //-- Float_t adc = recoEvent->SampleSum(ical, 1, 2, ped[ical]);
+            Float_t adc = recoEvent->a[ical] - ped[ical];
             if (adc < 100) adc = 0;
             // hcal[ical]->Fill(superTrack->tcal, superTrack->vcal, adc);
             // hcal_i[ical]->Fill(superTrack->tcal, superTrack->vcal);
