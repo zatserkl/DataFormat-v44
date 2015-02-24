@@ -109,6 +109,26 @@ ClassImp(HTree);
 //   }
 //}  // namespace Tree;
 
+void header(TTree* tree=0)
+{
+   if (!tree) tree = (TTree*) gDirectory->Get("t");
+   if (!tree) {
+      cout<< "Could not find tree \"t\" in the file " << gDirectory->GetName() <<endl;
+      return;
+   }
+
+   RunHeader* runHeader = (RunHeader*) tree->GetUserInfo()->First();
+   cout<< "runHeader->GetRun() = " << runHeader->GetRun() <<endl;
+   time_t start_time = runHeader->GetTime();
+   //--g++ cout<< "run start time: " << std::ctime(&start_time);
+   cout<< "run start time: " << ctime(&start_time);
+   cout<< "program version is " << runHeader->GetVersion() <<endl;
+   if (runHeader->GetTimeTag()) cout<< "event time tag was written out" <<endl;
+   else cout<< "event time tag was not written out" <<endl;
+   //cout<<endl;
+   cout<< "runHeader->GetAngle() = " << runHeader->GetAngle() <<endl;
+}
+
 void DataFormat(TTree* tree, Int_t event1=0, Int_t event2=-1)
 {
    RunHeader* runHeader = (RunHeader*) tree->GetUserInfo()->First();

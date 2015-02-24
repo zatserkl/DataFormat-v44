@@ -220,7 +220,7 @@ public:
       cout<< timestr;
       return timestr;
    }
-   ClassDef(PCTEvent, 14);
+   ClassDef(PCTEvent, 15);
 };
 
 class RunHeader: public TObject {
@@ -229,12 +229,14 @@ class RunHeader: public TObject {
    Int_t time;                         // 32-bit start time in seconds
    Bool_t timeTag;                     // 8-bit status bit, set if event time tags are written out
    UChar_t version;                    // 8-bit program version number, e.g. 44
+   UShort_t angle;                     // 12-bit stage angle in tenths of degree, from May 2014
 public:
    RunHeader(): TObject() {}
    void Fill(char buf_run[3]
              , char buf_time[4]
              , char buf_timeTag
              , char buf_version
+             , int angle10
    ) {
       union {
          Char_t buf[4];
@@ -256,10 +258,13 @@ public:
       time_union.buf[3] = buf_time[0];
       time = (Int_t) time_union.time;   // convert from float to Int_t
 
+      angle = angle10;
+
       timeTag = buf_timeTag;
       version = buf_version;
    }
    Int_t GetRun() const {return run;}
+   Double_t GetAngle() const {return angle/10.;}
    Int_t GetTime() const {return time;}
    Bool_t GetTimeTag() const {return timeTag;}
    const char* PrintTime() const {
@@ -271,7 +276,7 @@ public:
 
    Int_t GetVersion() const {return version;}
 
-   ClassDef(RunHeader, 3);
+   ClassDef(RunHeader, 4);
 };
 
 #endif  // DataFormat_h
