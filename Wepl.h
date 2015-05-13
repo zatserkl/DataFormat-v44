@@ -54,14 +54,14 @@ Float_t Wepl::EtoWEPL(Float_t* Estage) {
 		}
 	if(Estage[1]>thr1) { if(Estage[1]>87.) return 1000;
 	wet_wm=myP4(p1,Estage[1]);
- 	if(Estage[1]<21 || Estage[0]<19) return -1000;
+ 	if(Estage[0]<19) return -1000;
 	if(Estage[1]>69.7) {
 	wet_pr=myP4(p0c,Estage[0]);
 	wet_wm=wet_wm*.3+wet_pr*.7;	 	 
 		   }    
 	return wet_wm*1.0383;
 		}
-	if (Estage[0]>thr0) { if(Estage[1]>87.) return 1000;
+	if (Estage[0]>thr0) { if(Estage[0]>87.) return 1000;
 	wet_wm=myP4(p0,Estage[0]);
 	return wet_wm*1.0383;   // polystyrene to water equivalent
 		}
