@@ -29,36 +29,37 @@ Wepl::Wepl(Float_t * Fpar ) {
 Float_t Wepl::EtoWEPL(Float_t* Estage) {
 	Float_t wet_wm,wet_pr;	
 	if(Estage[4]>thr4) { if(Estage[4]>87.) return 1000;
- 	wet_wm=myP4(p4,Estage[4]); 
- //Check if energy deposition pattern is compatible to Bragg curve (within 5 sigma): 	
+//Check if energy deposition pattern is compatible to Bragg curve (within 5 sigma): 	
 	if(Estage[3]<35 || Estage[2]<25 || Estage[1]<21 || Estage[0]<19)  return -1000;
- 	return wet_wm*1.0383; // polystyrene to water equivalent
+ 	wet_wm=myP4(p4,Estage[4]); 
+  	return wet_wm*1.0383; // polystyrene to water equivalent
 		}
 	if(Estage[3]>thr3) { if(Estage[3]>87.) return 1000;
- 	wet_wm=myP4(p3,Estage[3]);
 	if(Estage[2]<25 || Estage[1]<21 || Estage[0]<19)  return -1000;
- 	if(Estage[3]>69.5) { //If Bragg peak shared by stage3,wrapping, and Estage[4]<trh4
- 	wet_pr=myP4(p2c,Estage[2]); 
- 	wet_wm=wet_wm*.3+wet_pr*.7; //use weighted mean with sigma 4 and 6mm
- 		     }   
+ 	wet_wm=myP4(p3,Estage[3]);
+ //If Bragg peak shared by stage3,wrapping, and Estage[4]<trh4
+//	if(Estage[3]<70 && Estage[3] >69.5) {
+//	wet_pr=myP4(p2c,Estage[2]); 
+//	wet_wm=wet_wm*.3+wet_pr*.7; //use weighted mean with sigma 4 and 6mm
+// 		     }   
 	return wet_wm*1.0383;
  		}
 	if(Estage[2]>thr2) { if(Estage[2]>87.) return 1000;
-	wet_wm=myP4(p2,Estage[2]);
 	if(Estage[1]<21 || Estage[0]<19) return -1000; 
-	if(Estage[2]>70.05) {
- 	wet_pr=myP4(p1c,Estage[1]);
- 	wet_wm=wet_wm*.3+wet_pr*.7; 
- 		    }	
+	wet_wm=myP4(p2,Estage[2]);
+//	if(Estage[2]>70.05) {
+// 	wet_pr=myP4(p1c,Estage[1]);
+// 	wet_wm=wet_wm*.3+wet_pr*.7; 
+// 		    }	
 	return wet_wm*1.0383;
 		}
 	if(Estage[1]>thr1) { if(Estage[1]>87.) return 1000;
+	if(Estage[0]<19) return -1000;
 	wet_wm=myP4(p1,Estage[1]);
- 	if(Estage[0]<19) return -1000;
-	if(Estage[1]>69.7) {
-	wet_pr=myP4(p0c,Estage[0]);
-	wet_wm=wet_wm*.3+wet_pr*.7;	 	 
-		   }    
+ //	if(Estage[1]>69.7) {
+//	wet_pr=myP4(p0c,Estage[0]);
+//	wet_wm=wet_wm*.3+wet_pr*.7;	 	 
+//		   }    
 	return wet_wm*1.0383;
 		}
 	if (Estage[0]>thr0) { if(Estage[0]>87.) return 1000;

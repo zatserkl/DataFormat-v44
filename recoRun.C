@@ -33,7 +33,7 @@ TClonesArray* Reco::poolSuperTrack_ = 0;
 
 void recoRun(const char* ifname
              , Int_t event1=0, Int_t event2=-1
-             , const char* dbname="rundb-Feb2015.dat"
+             , const char* dbname="rundb-May2015.dat"
              , const char* tv_calib_fname="TVcalib.txt"
              , const char* wet_calib_fname="wet5calibExp.txt"
              , bool debug=false
@@ -97,10 +97,18 @@ void recoRun(const char* ifname
 
    PCTSensors* pCTSensors = new PCTSensors(geometry);
 
-   Double_t RbeamSpot = 0.5*(14.16 + 17.08);                         // Sep2014 beam test
-   BeamSpot beamSpotIn(35.52,-1.07,-3500, RbeamSpot);                // Sep2014 beam test
-   BeamSpot beamSpotOut(13.76,-6.96,-3500, 140.);                    // Sep2014 beam test
-   // BeamSpot beamSpotOut(13.76,-6.96,-3500, 20.);                    // Sep2014 beam test
+   //-- Geant4 setup
+   //-- Double_t RbeamSpot = 10.;                                            // Geant4
+   //-- BeamSpot beamSpotIn(0,0,-3500, RbeamSpot);                           // Geant4
+   //-- BeamSpot beamSpotOut(0,0,-3500, RbeamSpot);                          // Geant4
+
+   // Double_t RbeamSpot = 0.5*(14.16 + 17.08);                         // Sep2014 beam test
+   // BeamSpot beamSpotIn(35.52,-1.07,-3500, RbeamSpot);                // Sep2014 beam test
+   // BeamSpot beamSpotOut(13.76,-6.96,-3500, 140.);                    // Sep2014 beam test
+
+   Double_t RbeamSpot = 10.;                                       // May2015 beam test
+   BeamSpot beamSpotIn(-10.5,9.7,-2100, RbeamSpot);                // May2015 beam test
+   BeamSpot beamSpotOut(-5.0,13.0,-2100, RbeamSpot);               // May2015 beam test
 
    Int_t tnchan = 400, vnchan = 20;
    Double_t tlow = -200., tup = 200., vlow = -50, vup = 50;
@@ -126,9 +134,10 @@ void recoRun(const char* ifname
 
    // ADC Pedestals
 
-   //  Double_t ped[5] = {9.645, -20.484, -201.987, 62.966, -7.747};     // Celeste data
-   //-- Jul2014-- Double_t ped[5] = {121.3, -71.5, -1137, 346.2, -49.};     // New pedestals (x6, reduced data)
-   Double_t ped[5] = {431,-130,-20,224,60};     // Sept. 2014 pedestals (x6, reduced data)
+   // Double_t ped[5] = {9.645, -20.484, -201.987, 62.966, -7.747};     // Celeste data
+   // Jul2014-- Double_t ped[5] = {121.3, -71.5, -1137, 346.2, -49.};     // New pedestals (x6, reduced data)
+   // Double_t ped[5] = {431,-130,-20,224,60};     // Sept. 2014 pedestals (x6, reduced data)
+   Double_t ped[5] = {549,92,204,575,385};     // New pedestals, May 2015 (x6, reduced data)
 
    //   Prepare stuff for TV correction and convertion ADC->energy(MeV)
 
@@ -277,7 +286,7 @@ void recoRun(const char* ifname
 
 void recoEvent(Int_t event, TTree* tree=0
                , bool debug=true
-               , const char* dbname="rundb-Feb2015.dat"
+               , const char* dbname="rundb-May2015.dat"
               )
 {
    if (!tree) tree = (TTree*) gDirectory->Get("t");
@@ -352,7 +361,7 @@ void recoEvent(Int_t event, TTree* tree=0
 // NB: display does not use Reco
 //
 
-Int_t display(Int_t event, TTree* tree=0, const char* dbname="rundb-Feb2015.dat", const char* wname="event_display")
+Int_t display(Int_t event, TTree* tree=0, const char* dbname="rundb-May2015.dat", const char* wname="event_display")
 {
    if (!tree) tree = (TTree*) gDirectory->Get("t");
    if (!tree) {
@@ -512,7 +521,7 @@ Int_t display(Int_t event, TTree* tree=0, const char* dbname="rundb-Feb2015.dat"
    return event;
 }
 
-void eloop(Int_t evtNo=0, TTree* tree=0, const char* dbname="rundb-Feb2015.dat", const char* wname="event_display")
+void eloop(Int_t evtNo=0, TTree* tree=0, const char* dbname="rundb-May2015.dat", const char* wname="event_display")
 {
    if (tree == 0) {
       tree = (TTree*) gDirectory->Get("t");
