@@ -149,7 +149,8 @@ void writeReco(Int_t event1=0, Int_t event2=-1, TTree* tree=0, OutputFiles* outp
    // ADC Pedestals
    //  Double_t ped[5] = {9.645, -20.484, -201.987, 62.966, -7.747};     // Celeste data
    //----------------------------------------------------------------Double_t ped[5] = {121.3, -71.5, -1137, 346.2, -49.};     // New pedestals (x6, reduced data)
-   Double_t ped[5] = {431,-130,-20,224,60};     // Sept. 2014 pedestals (x6, reduced data)
+   // Double_t ped[5] = {431,-130,-20,224,60};     // Sept. 2014 pedestals (x6, reduced data)
+   Double_t ped[5] = {549,92,204,575,385};     // New pedestals, May 2015 (x6, reduced data)
    //   Prepare stuff for TV correction and convertion ADC->energy(MeV)
    Double_t ucal = 216.9 + 40; // approx position for the calorimeter entrance  
    Float_t par[5]; Float_t adc; Float_t Estage[5];
