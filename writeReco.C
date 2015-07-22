@@ -84,7 +84,7 @@ struct OutputFiles {
    }
 };
 
-void writeReco(Int_t event1=0, Int_t event2=-1, TTree* tree=0, OutputFiles* outputFiles=0, const char* dbname="rundb-Feb2015.dat", bool plot=false)
+void writeReco(Int_t event1=0, Int_t event2=-1, TTree* tree=0, OutputFiles* outputFiles=0, const char* dbname="rundb-May2015.dat", bool plot=false)
 {
    Bool_t debug = kFALSE;
    if (debug) cout<< "debug in on" <<endl;
@@ -258,7 +258,7 @@ void writeReco(Int_t event1=0, Int_t event2=-1, TTree* tree=0, OutputFiles* outp
    cout<< "Wrote " << outputFiles->nevents << " events into temporary files" <<endl;
 }
 
-void writeReco(const char* ifname, Int_t event1=0, Int_t event2=-1, const char* dbname="rundb-Feb2015.dat")
+void writeReco(const char* ifname, Int_t event1=0, Int_t event2=-1, const char* dbname="rundb-May2015.dat")
 {
    Bool_t debug = kFALSE;
    if (debug) cout<< "debug in on" <<endl;
