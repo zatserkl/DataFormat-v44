@@ -124,7 +124,7 @@ public:
 #pragma link C++ class CRay2D;
 #endif
 
-std::ostream& operator << (std::ostream& os, const CRay2D& ray) {
+inline std::ostream& operator << (std::ostream& os, const CRay2D& ray) {
    os << "x_ = " << ray.x_ << " cx_ = " << ray.cx_ << " cu_ = " << ray.cu_;
    return os;
 }
@@ -156,7 +156,7 @@ public:
    ClassDef(SensorHit, 5);
 };
 
-std::ostream& operator << (std::ostream& os, const SensorHit& hit) {
+inline std::ostream& operator << (std::ostream& os, const SensorHit& hit) {
    return os
      << "sensorId " << std::setw(4) << hit.sensorId_
      << " nfirst " << std::setw(2) << hit.nfirst_
@@ -205,7 +205,7 @@ public:
 #pragma link C++ class Track2D;
 #endif
 
-std::ostream& operator << (std::ostream& os, const Track2D& track2D) {
+inline std::ostream& operator << (std::ostream& os, const Track2D& track2D) {
    os << "x_ = " << track2D.x_ << " cx_ = " << track2D.cx_ << " cu_ = " << track2D.cu_ << " hit0 " << *track2D.hit1_ << " hit1 " << *track2D.hit2_;
    return os;
 }

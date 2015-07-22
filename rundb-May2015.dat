@@ -14,4 +14,6 @@ run 47 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t
 run 48 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom pyramid nbricks 4
 run 49 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom none
 
+run 51 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom pyramid nbricks 0
+
 run 188 uvt -217.3 -211.4 -167.2 -161.4 167.2 161.4 217.3 211.4 v-board 3 4 6 2 t-board 3 4 5 1 phantom pyramid nbricks 0
