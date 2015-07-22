@@ -9,6 +9,10 @@
 // and auxiliary function myP4 calculates 4 degree polinomial.
 // Created by V.A.Bashkirov, May 9,2014, mdified May 16, 2014
 // Jul 24, 2014. Tuned for stage interfaces handling  for Jul 20 beamtest data
+
+#ifndef Wepl_h
+#define Wepl_h
+
  class Wepl {  
    Float_t p0[5],p0c[5],p1[5],p1c[5],p2[5],p2c[5],p3[5],p3c[5],p4[5];
 	Float_t thr0,thr1,thr2,thr3,thr4;	  
@@ -20,14 +24,14 @@
 	void SetEthresholds(Float_t,Float_t,Float_t,Float_t,Float_t);
 	
 };
-Wepl::Wepl(Float_t * Fpar ) {
+inline Wepl::Wepl(Float_t * Fpar ) {
 	for (int i=0; i<5; ++i)  {
 	p0[i]=Fpar[i]; p0c[i]=Fpar[i+5];p1[i]=Fpar[i+10];p1c[i]=Fpar[i+15];
 	p2[i]=Fpar[i+20]; p2c[i]=Fpar[i+25];p3[i]=Fpar[i+30];p3c[i]=Fpar[i+35];
 	p4[i]=Fpar[i+40];        }
 }
-Float_t Wepl::EtoWEPL(Float_t* Estage) {
-	Float_t wet_wm,wet_pr;	
+inline Float_t Wepl::EtoWEPL(Float_t* Estage) {
+	Float_t wet_wm /*,wet_pr*/;	
 	if(Estage[4]>thr4) { if(Estage[4]>87.) return 1000;
 //Check if energy deposition pattern is compatible to Bragg curve (within 5 sigma): 	
 	if(Estage[3]<35 || Estage[2]<25 || Estage[1]<21 || Estage[0]<19)  return -1000;
@@ -68,10 +72,12 @@ Float_t Wepl::EtoWEPL(Float_t* Estage) {
 		}
 	return 2000;
  }
-Float_t Wepl::myP4(Float_t * p,Float_t x) { 
+inline Float_t Wepl::myP4(Float_t * p,Float_t x) { 
 	Float_t x2=x*x;
 return p[0]+p[1]*x+p[2]*x2+p[3]*x2*x+p[4]*x2*x2;
 }
-void Wepl::SetEthresholds(Float_t t0, Float_t t1, Float_t t2, Float_t t3, Float_t t4) {
+inline void Wepl::SetEthresholds(Float_t t0, Float_t t1, Float_t t2, Float_t t3, Float_t t4) {
    thr0=t0;thr1=t1;thr2=t2;thr3=t3;thr4=t4; 
 }
+
+#endif // #ifndef Wepl_h

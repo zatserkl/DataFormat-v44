@@ -239,11 +239,11 @@ public:
       SensorHit vertexHit_t(0, 0, 0, beamSpot->u_, beamSpot->t_);          // vertex hit for recovery of the t-hits
       SensorHit vertexHit_v(0, 0, 0, beamSpot->u_, beamSpot->v_);          // vertex hit for recovery of the v-hits
 
-      Int_t layer1 = layerToStart;
-      Int_t layer2 = layer1 + 1;
+      // Int_t layer1 = layerToStart;
+      // Int_t layer2 = layer1 + 1;
 
-      //-- Double_t distance_max = 1. + 5.*beamSpot->r_*(geometry_->ut_[1]-geometry_->ut_[0])/(geometry_->ut_[0] - beamSpot->u_);
-      Double_t distance_max = 1. + 5.*beamSpot->r_*(geometry_->ut_[layer2]-geometry_->ut_[layer1])/(geometry_->ut_[layer1] - beamSpot->u_);
+      //--old-- Double_t distance_max = 1. + 5.*beamSpot->r_*(geometry_->ut_[1]-geometry_->ut_[0])/(geometry_->ut_[0] - beamSpot->u_);
+      //-- Double_t distance_max = 1. + 5.*beamSpot->r_*(geometry_->ut_[layer2]-geometry_->ut_[layer1])/(geometry_->ut_[layer1] - beamSpot->u_);
 
       for (int ilayer=layerToStart; ilayer<=layerToStart+1; ++ilayer)
       {
