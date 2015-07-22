@@ -1,6 +1,6 @@
 {
-gROOT->Macro(gSystem->ExpandPathName("$(HOME)/macros/rootlogon.C"));
-cout<< "*-- Local rootlogon" << endl;
+# gROOT->Macro(gSystem->ExpandPathName("$(HOME)/macros/rootlogon.C"));
+# cout<< "*-- Local rootlogon" << endl;
 
 if (gClassTable->GetID("PCTEvent") < 0) {
     cout<< "Load DataFormat.C+" <<endl;
