@@ -208,7 +208,13 @@ public:
       if (superTracks_.size() == 0) return;
 
       //-- Double_t tilt = 2.94e-3;    // radians
-      Double_t tilt = 2.50e-3;    // radians       // after Robert's corrections
+      //-- Double_t tilt = 2.50e-3;    // radians       // after Robert's corrections
+      Double_t tilt = 0;
+
+      //-- Double_t offset = 12;
+      Double_t offset_v = 0;
+
+      Double_t offset_t = 0;
 
       for (std::list<const SuperTrack*>::iterator it=superTracks_.begin(); it!=superTracks_.end(); ++it) {
         const SuperTrack* superTrack = *it;
@@ -221,8 +227,8 @@ public:
         //--AZ-- otrack_t->x_ -= v0*tilt - 0.030;
         //--AZ-- otrack_v->x_ += (t0 - 150.)*tilt - 0.15;
 
-        otrack_t->x_ -= (v0 - 12.)*tilt;
-        otrack_v->x_ += t0*tilt;
+        otrack_t->x_ -= (v0 - offset_v)*tilt;
+        otrack_v->x_ += (t0 - offset_t)*tilt;
 
         // otrack_t->x_ -= (v0 - 10.)*tilt;
         // otrack_v->x_ += (t0 - 170.)*tilt;
