@@ -859,7 +859,7 @@ int main(int argc, char *argv[])
     if (argc > n) ifname = argv[n];
     else {
         cout<< "***Warning: Expected filename for the data" <<endl;
-        cout<< "Usage: " << argv[0] << " ifname event1=0 event2=-1 dbname=\"rundb-May2015.dat\" tv_calib_fname=\"TVcalib.txt\" wet_calib_fname=\"wet5calibExp.txt\" debug=0" <<endl;
+        cout<< "Usage: " << argv[0] << " ifname event1=0 event2=-1 dbname=rundb-May2015.dat tv_calib_fname=TVcalib.txt wet_calib_fname=wet5calibExp.txt debug=0" <<endl;
         return 0;
     }
     ++n;
@@ -868,7 +868,7 @@ int main(int argc, char *argv[])
     if (argc > n) event1 = atoi(argv[n]);
     else {
         cout<< "***Warning: Expected the first event to process" <<endl;
-        cout<< "Usage: " << argv[0] << " ifname event1=0 event2=-1 dbname=\"rundb-May2015.dat\" tv_calib_fname=\"TVcalib.txt\" wet_calib_fname=\"wet5calibExp.txt\" debug=0" <<endl;
+        cout<< "Usage: " << argv[0] << " ifname event1=0 event2=-1 dbname=rundb-May2015.dat tv_calib_fname=TVcalib.txt wet_calib_fname=wet5calibExp.txt debug=0" <<endl;
         return 0;
     }
     ++n;
@@ -877,7 +877,7 @@ int main(int argc, char *argv[])
     if (argc > n) event2 = atoi(argv[n]);
     else {
         cout<< "***Warning: Expected the last event to process" <<endl;
-        cout<< "Usage: " << argv[0] << " ifname event1=0 event2=-1 dbname=\"rundb-May2015.dat\" tv_calib_fname=\"TVcalib.txt\" wet_calib_fname=\"wet5calibExp.txt\" debug=0" <<endl;
+        cout<< "Usage: " << argv[0] << " ifname event1=0 event2=-1 dbname=rundb-May2015.dat tv_calib_fname=TVcalib.txt wet_calib_fname=wet5calibExp.txt debug=0" <<endl;
         return 0;
     }
     ++n;
@@ -886,7 +886,7 @@ int main(int argc, char *argv[])
     if (argc > n) dbname = argv[n];
     else {
         cout<< "***Warning: Expected filename for rundb" <<endl;
-        cout<< "Usage: " << argv[0] << " ifname event1=0 event2=-1 dbname=\"rundb-May2015.dat\" tv_calib_fname=\"TVcalib.txt\" wet_calib_fname=\"wet5calibExp.txt\" debug=0" <<endl;
+        cout<< "Usage: " << argv[0] << " ifname event1=0 event2=-1 dbname=rundb-May2015.dat tv_calib_fname=TVcalib.txt wet_calib_fname=wet5calibExp.txt debug=0" <<endl;
         return 0;
     }
     ++n;
@@ -895,7 +895,7 @@ int main(int argc, char *argv[])
     if (argc > n) tv_calib_fname = argv[n];
     else {
         cout<< "***Warning: Expected filename for TV calibration coefficients" <<endl;
-        cout<< "Usage: " << argv[0] << " ifname event1=0 event2=-1 dbname=\"rundb-May2015.dat\" tv_calib_fname=\"TVcalib.txt\" wet_calib_fname=\"wet5calibExp.txt\" debug=0" <<endl;
+        cout<< "Usage: " << argv[0] << " ifname event1=0 event2=-1 dbname=rundb-May2015.dat tv_calib_fname=TVcalib.txt wet_calib_fname=wet5calibExp.txt debug=0" <<endl;
         return 0;
     }
     ++n;
@@ -904,7 +904,7 @@ int main(int argc, char *argv[])
     if (argc > n) wet_calib_fname = argv[n];
     else {
         cout<< "***Warning: Expected filename for WET calibration coefficients" <<endl;
-        cout<< "Usage: " << argv[0] << " ifname event1=0 event2=-1 dbname=\"rundb-May2015.dat\" tv_calib_fname=\"TVcalib.txt\" wet_calib_fname=\"wet5calibExp.txt\" debug=0" <<endl;
+        cout<< "Usage: " << argv[0] << " ifname event1=0 event2=-1 dbname=rundb-May2015.dat tv_calib_fname=TVcalib.txt wet_calib_fname=wet5calibExp.txt debug=0" <<endl;
         return 0;
     }
     ++n;

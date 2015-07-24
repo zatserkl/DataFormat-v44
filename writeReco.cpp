@@ -502,7 +502,7 @@ int main(int argc, char *argv[])
     }
     ++n;
 
-    Int_t event2 = -1;
+    Int_t event2 = 0;
     if (argc > n) event2 = atoi(argv[n]);
     else {
         cout<< "***Warning: Expected the last event to process" <<endl;
