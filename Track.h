@@ -158,8 +158,8 @@ public:
 
 inline std::ostream& operator << (std::ostream& os, const SensorHit& hit) {
    return os
-     << "sensorId " << std::setw(4) << hit.sensorId_
-     << " nfirst " << std::setw(2) << hit.nfirst_
+     << "sensorId " << std::setw(3) << hit.sensorId_
+     << " nfirst " << std::setw(3) << hit.nfirst_
      << " nstrips " << hit.nstrips_
      << " u " << hit.u_
      << " pos " << hit.pos_;
@@ -206,8 +206,14 @@ public:
 #endif
 
 inline std::ostream& operator << (std::ostream& os, const Track2D& track2D) {
-   os << "x_ = " << track2D.x_ << " cx_ = " << track2D.cx_ << " cu_ = " << track2D.cu_ << " hit0 " << *track2D.hit1_ << " hit1 " << *track2D.hit2_;
-   return os;
+   return os
+       << std::setprecision(5)
+       << "x_ = " << std::setw(8) << track2D.x_
+       << " cx_ = " << std::setw(8) << track2D.cx_
+       << " cu_ = " << std::setw(8) << track2D.cu_
+       << "   hit0 " << *track2D.hit1_
+       << "   hit1 " << *track2D.hit2_
+   ;
 }
 
 class SuperTrack2D: public TObject {
