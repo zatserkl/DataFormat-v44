@@ -283,15 +283,23 @@ public:
          return false;
       }
       ss >> phantom;
-      //cout<< "--> phantom = " << phantom <<endl;
+      cout<< "--> phantom = " << phantom <<endl;
       if (phantom == phantom_pyramid_str) {
-         nbricks = -1;
-         ss >> nbricks;
-         if (nbricks == -1) {
-            cout<< "read error while expected integer number of bricks" <<endl;
-            return false;
-         }
-         cout<< "phantom: " << phantom << " nbricks = " << nbricks <<endl;
+          // read the word "nbricks"
+          ss >> word;
+          if (word == nbricks_str) {
+              nbricks = -1;
+              ss >> nbricks;
+              if (nbricks == -1) {
+                  cout<< "read error while expected integer number of bricks" <<endl;
+                  return false;
+              }
+              cout<< "phantom: " << phantom << " nbricks = " << nbricks <<endl;
+          }
+          else {
+              cout<< "expected word \"nbricks\"" <<endl;
+              return false;
+          }
       }
       else if (phantom == phantom_water_str) {
          ss >> word >> angle_;
