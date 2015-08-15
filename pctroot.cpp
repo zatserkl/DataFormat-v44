@@ -465,7 +465,7 @@ int main (int argc, char* argv[])
 
         if (buf[2] == 0) nzeros++;
 
-        const Int_t nzeros_max = 3;
+        const Int_t nzeros_max = 4;
         if (nzeros > nzeros_max) {
           // probably we see the end of file filled by zeros
           cout<< "found " << nzeros_max+1 << " consecutive zero bytes: probably the rest of file is filled with zeros" <<endl;
