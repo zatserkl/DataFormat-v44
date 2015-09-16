@@ -772,7 +772,7 @@ Int_t pctWrite(std::string inputFileName=""
                     //
                     // angle cut
                     //
-                    if (superTrack->angle > 0.070) continue;
+                    if (superTrack->angle > 0.2) continue;
 
                     for (int ical=0; ical<5; ++ical) {
                         adc = recoEvent->a[ical];
