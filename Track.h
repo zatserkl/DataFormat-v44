@@ -116,6 +116,24 @@ public:
       // cout<< "CRay2D::at: x_proj = " << x_proj <<endl;
       return x_proj;
    }
+   static Bool_t intersect(const CRay2D* ray1, const CRay2D* ray2, Double_t& u, Double_t& x, Double_t udefault=-10000., Double_t xdefault=-1000.)
+   {
+      // standalone function
+
+      u = udefault;                 // TODO: find something smarter
+      x = xdefault;
+
+      Double_t eps = 1e-12;
+
+      Double_t tan1 = ray1->cx_/ray1->cu_;
+      Double_t tan2 = ray2->cx_/ray2->cu_;
+      if (TMath::Abs(tan1 - tan2) < eps) return kFALSE;     // rays are parallel
+
+      // direct solution of the system of equation (other way: find the parameter and use it for u and x is a bit more complicated)
+      u = (ray2->x_ - ray1->x_) / (tan1 - tan2);
+      x = ray1->x_ + tan1*u;
+      return kTRUE;
+   }
 
    ClassDef(CRay2D, 1);
 };
