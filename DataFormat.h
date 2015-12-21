@@ -90,6 +90,10 @@ public:
    ClassDef(TrackerChip, 17);
 };
 
+#ifdef __ROOTCLING__
+#pragma link C++ class TrackerChip;
+#endif
+
 class TrackerFPGA: public TObject {
 public:
   UChar_t layerFPGA;         //[0,12,4]      // 4-bit tracker FPGA address
@@ -136,6 +140,10 @@ public:
   ClassDef(TrackerFPGA, 7);
 };
 
+#ifdef __ROOTCLING__
+#pragma link C++ class TrackerFPGA;
+#endif
+
 class EnergySample: public TObject {
 public:
   Bool_t OTR[3];                 //[0,1,1] out-of-range
@@ -150,6 +158,10 @@ public:
   }
   ClassDef(EnergySample, 8);
 };
+
+#ifdef __ROOTCLING__
+#pragma link C++ class EnergySample;
+#endif
 
 class EnergyBoard: public TObject {
 public:
@@ -193,6 +205,10 @@ public:
    ClassDef(EnergyBoard, 9);
 };
 
+#ifdef __ROOTCLING__
+#pragma link C++ class EnergyBoard;
+#endif
+
 class PCTEvent: public TObject {
 public:
    Long64_t timeTag;                   // 36-bit event time tag
@@ -222,6 +238,10 @@ public:
    }
    ClassDef(PCTEvent, 15);
 };
+
+#ifdef __ROOTCLING__
+#pragma link C++ class PCTEvent;
+#endif
 
 class RunHeader: public TObject {
    // added from version 44
@@ -278,5 +298,9 @@ public:
 
    ClassDef(RunHeader, 4);
 };
+
+#ifdef __ROOTCLING__
+#pragma link C++ class RunHeader;
+#endif
 
 #endif  // DataFormat_h
