@@ -7,6 +7,18 @@
 #include <TH2.h>
 #include <TFile.h>
 
+//
+// static pointer to the geometry
+//
+Geometry* Geometry::geometry_ = 0;
+//
+// static hit pool
+//
+TClonesArray* Sensor::poolSensorHit_ = 0;
+TClonesArray* Reco::poolTrack2D_ = 0;
+TClonesArray* Reco::poolSuperTrack2D_ = 0;
+TClonesArray* Reco::poolSuperTrack_ = 0;
+
 void plotReco(Int_t event1=0, Int_t event2=-1, TTree* tree=0)
 {
    Bool_t debug = kFALSE;
